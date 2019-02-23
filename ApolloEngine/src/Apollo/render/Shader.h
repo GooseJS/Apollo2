@@ -3,6 +3,7 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "Apollo/GL.h"
 #include "Apollo/Core.h"
@@ -22,14 +23,14 @@ namespace Apollo
 		GLuint _vertexShader;
 		GLuint _fragmentShader;
 
-		std::map<const char*, int> _attributeMap;
-		std::map<const char*, int> _uniformMap;
+		std::map<std::string, int> _attributeMap;
+		std::map<std::string, int> _uniformMap;
 
 		bool _init;
 
-		GLuint compileShader(const char* shaderSource, GLenum shaderType)
+		GLuint compileShader(std::string shaderSource, GLenum shaderType)
 		{
-			const char* shaderTypeString;
+			std::string shaderTypeString;
 			switch (shaderType)
 			{
 			case GL_VERTEX_SHADER:
@@ -68,7 +69,7 @@ namespace Apollo
 			return shaderID;
 		}
 
-		void init(const char* vertexShaderSource, const char* fragmentShaderSource)
+		void init(std::string vertexShaderSource, std::string fragmentShaderSource)
 		{
 			_programID = glCreateProgram();
 			glUseProgram(_programID);
@@ -138,12 +139,12 @@ namespace Apollo
 
 		~Shader() { glDeleteProgram(_programID); }
 
-		inline void initFromString(const char* vertexShader, const char* fragmentShader)
+		inline void initFromString(std::string vertexShader, std::string fragmentShader)
 		{
 			init(vertexShader, fragmentShader);
 		}
 
-		inline void initFromFile(const char* vertexShaderLoc, const char* fragmentShaderLoc)
+		inline void initFromFile(std::string vertexShaderLoc, std::string fragmentShaderLoc)
 		{
 			std::ifstream vertexFileStream(vertexShaderLoc);
 			std::ifstream fragmentFileStream(fragmentShaderLoc);
@@ -185,7 +186,7 @@ namespace Apollo
 				AP_ENGINE_CRITICAL("Program must be initialized before being used.");
 		}
 
-		GLuint attribute(const char* attribName)
+		GLuint attribute(std::string attribName)
 		{
 			auto iter = _attributeMap.find(attribName);
 			if (iter == _attributeMap.end())
@@ -205,7 +206,7 @@ namespace Apollo
 			return iter->second;
 		}
 
-		GLuint uniform(const char* uniformName)
+		GLuint uniform(std::string uniformName)
 		{
 			auto iter = _uniformMap.find(uniformName);
 			if (iter == _uniformMap.end())
