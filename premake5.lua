@@ -1,4 +1,5 @@
 workspace "Apollo"
+	startproject "ApolloGame"
 	architecture "x64"
 
 	configurations
@@ -20,8 +21,6 @@ IncludeDir["imgui"] = "lib/imgui"
 include "premake/glfw"
 include "premake/glew"
 include "premake/imgui"
-
-startproject "ApolloGame"
 
 project "ApolloEngine"
 	location "ApolloEngine"
