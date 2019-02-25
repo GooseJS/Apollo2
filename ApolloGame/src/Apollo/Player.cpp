@@ -12,8 +12,9 @@ namespace Apollo
 
 	}
 
-	void Player::draw()
+	void Player::draw(Shader& shader)
 	{
+		shader.uniform("transformMatrix", _sprite.getTransformMatrix());
 		_sprite.draw();
 	}
 
@@ -25,8 +26,10 @@ namespace Apollo
 		if (input.downPressed)
 			_position -= glm::vec2(0.0f, frameMovementSpeed);
 		if (input.leftPressed)
-			_position += glm::vec2(0.0f, frameMovementSpeed);
+			_position += glm::vec2(frameMovementSpeed, 0.0f);
 		if (input.rightPressed)
-			_position -= glm::vec2(0.0f, frameMovementSpeed);
+			_position -= glm::vec2(frameMovementSpeed, 0.0f);
+
+		_sprite.setPos(_position);
 	}
 }

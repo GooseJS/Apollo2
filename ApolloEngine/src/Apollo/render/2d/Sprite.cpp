@@ -49,12 +49,12 @@ namespace Apollo
 
 	void Sprite::setPos(glm::vec2 vec)
 	{
-		_pos = vec; updateTransform();
+		_pos = vec;
 	}
 
 	void Sprite::move(glm::vec2 vec)
 	{
-		_pos += vec; updateTransform();
+		_pos += vec;
 	}
 
 	void Sprite::move(float x, float y)

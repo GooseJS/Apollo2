@@ -181,7 +181,7 @@ namespace Apollo
 			initFromString(std::move(vertexResult), std::move(fragmentResult));
 		}
 
-		inline void use()
+		inline void use() const
 		{
 			if (_init)
 				glUseProgram(_programID);
@@ -210,7 +210,7 @@ namespace Apollo
 			return iter->second;
 		}
 
-		GLuint uniform(std::string uniformName)
+		GLuint uniform(std::string uniformName) // TODO: Change this class over to better const
 		{
 			auto iter = _uniformMap.find(uniformName);
 			if (iter == _uniformMap.end())

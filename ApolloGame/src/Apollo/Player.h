@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 
 #include <Apollo/GameSettings.h>
+#include <Apollo/render/Shader.h>
 #include <Apollo/render/2d/Sprite.h>
 
 namespace Apollo
@@ -38,8 +39,11 @@ namespace Apollo
 		Player(Sprite sprite);
 		~Player();
 
-		void draw();
+		void draw(Shader& shader);
 
 		void move(MovementInput input);
+
+		inline PlayerCapabilities& getCapabilities() { return _capabilities; }
+		inline PlayerConfiguration& getConfiguration() { return _playerConfig; }
 	};
 }

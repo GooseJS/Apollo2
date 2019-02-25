@@ -17,7 +17,9 @@ IncludeDir["spdlog"] = "lib/spdlog/include"
 IncludeDir["glm"] = "lib/glm"
 IncludeDir["stb"] = "lib/stb"
 IncludeDir["imgui"] = "lib/imgui"
+IncludeDir["Box2D"] = "lib/Box2D"
 
+include "lib/Box2D"
 include "premake/glfw"
 include "premake/glew"
 include "premake/imgui"
@@ -45,6 +47,7 @@ project "ApolloEngine"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.imgui}",
+		"%{IncludeDir.Box2D}",
 		"%{prj.name}/src"
 	}
 
@@ -52,6 +55,7 @@ project "ApolloEngine"
 	{
 		"GLFW",
 		"GLEW",
+		"Box2D",
 		"opengl32.lib"
 	}
 
@@ -110,6 +114,7 @@ project "ApolloGame"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.GLEW}",
+		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.libnoise}",
@@ -120,6 +125,7 @@ project "ApolloGame"
 	{
 		"GLEW",
 		"GLFW",
+		"Box2D",
 		"opengl32.lib",
 		"ApolloEngine"
 	}

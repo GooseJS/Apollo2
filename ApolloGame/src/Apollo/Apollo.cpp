@@ -23,6 +23,7 @@ int main()
 		Apollo::Sprite sprite;
 		sprite.init(500.0f, 500.0f, 0, false);
 		Apollo::Player player(sprite);
+		player.getConfiguration().moveSpeed = 100.0f;
 
 		Apollo::GameSettings::getInstance().setup();
 
@@ -39,7 +40,7 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			shader.use();
-			player.draw();
+			player.draw(shader);
 
 			Apollo::MovementInput movementInput{};
 			movementInput.upPressed = window.isKeyPressed(GLFW_KEY_W);
@@ -48,8 +49,6 @@ int main()
 			movementInput.rightPressed = window.isKeyPressed(GLFW_KEY_A);
 
 			player.move(movementInput);
-
-			shader.uniform("transformMatrix", sprite.getTransformMatrix());
 		}
 
 		Apollo::GameSettings::getInstance().cleanup();

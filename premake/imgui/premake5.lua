@@ -20,10 +20,15 @@ project "ImGui"
         "%{prj.location}/imgui_demo.cpp"
     }
 
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "On"
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "On"
+
 	filter "system:windows"
         systemversion "latest"
         cppdialect "C++17"
-        staticruntime "On"
-
-    filter { "system:windows", "configurations:Release" }
-        buildoptions "/MT"
+        staticruntime "off"

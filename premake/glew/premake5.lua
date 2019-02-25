@@ -15,8 +15,17 @@ project "GLEW"
         "%{prj.location}/include"
     }
 
+	filter "configurations:Debug"
+		runtime "Debug"
+		symbols "On"
+
+	filter "configurations:Release"
+		runtime "Release"
+		optimize "On"
+
 	filter "system:windows"
         systemversion "latest"
+		staticruntime "off"
 		defines {
 			"WIN32",
 			"WIN32_LEAN_AND_MEAN",
@@ -33,5 +42,3 @@ project "GLEW"
 		{
 			("{COPY} %{cfg.buildtarget.relpath} ../../data"),
 		}
-    filter { "system:windows", "configurations:Release" }
-        buildoptions "/MT"

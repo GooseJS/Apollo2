@@ -35,6 +35,6 @@ namespace Apollo
 		void setPos(glm::vec2 vec);
 		void move(glm::vec2 vec);
 
-		inline glm::mat4 getTransformMatrix() { return _transformMatrix; }
+ 		inline glm::mat4 getTransformMatrix() { updateTransform();  return _transformMatrix; }
 	};
 }
