@@ -50,6 +50,7 @@ namespace Apollo
 
 		AP_ENGINE_INFO("Window created successfully.");
 		_windowCreated = true;
+		GameSettings::getInstance().windowCfg = &_windowCfg;
 		return APOLLO_NO_ERROR;
 	}
 }

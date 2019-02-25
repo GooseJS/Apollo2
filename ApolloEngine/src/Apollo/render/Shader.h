@@ -4,6 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Apollo/GL.h"
 #include "Apollo/Core.h"
@@ -11,7 +13,7 @@
 
 namespace Apollo
 {
-	class Shader
+	class APOLLO_API Shader
 	{
 	private:
 		enum class ShaderObjectType
@@ -55,7 +57,8 @@ namespace Apollo
 				return -1;
 			}
 
-			glShaderSource(shaderID, 1, &shaderSource, nullptr);
+			const char* shaderSource_cstr = shaderSource.c_str();
+			glShaderSource(shaderID, 1, &shaderSource_cstr, nullptr);
 			glCompileShader(shaderID);
 
 			GLint shaderStatus;
@@ -141,7 +144,7 @@ namespace Apollo
 
 		inline void initFromString(std::string vertexShader, std::string fragmentShader)
 		{
-			init(vertexShader, fragmentShader);
+			init(std::move(vertexShader), std::move(fragmentShader));
 		}
 
 		inline void initFromFile(std::string vertexShaderLoc, std::string fragmentShaderLoc)
@@ -175,7 +178,7 @@ namespace Apollo
 				fragmentResult.append(line + "\n");
 			} fragmentFileStream.close();
 
-			initFromString(vertexResult.c_str(), fragmentResult.c_str());
+			initFromString(std::move(vertexResult), std::move(fragmentResult));
 		}
 
 		inline void use()
@@ -191,7 +194,8 @@ namespace Apollo
 			auto iter = _attributeMap.find(attribName);
 			if (iter == _attributeMap.end())
 			{
-				GLint attribLookup = glGetAttribLocation(_programID, attribName);
+				const char* attribName_cstr = attribName.c_str();
+				GLint attribLookup = glGetAttribLocation(_programID, attribName_cstr);
 				if (attribLookup == -1)
 				{
 					AP_ENGINE_CRITICAL("Could not find shader attribute: {}", attribName);
@@ -211,7 +215,8 @@ namespace Apollo
 			auto iter = _uniformMap.find(uniformName);
 			if (iter == _uniformMap.end())
 			{
-				GLint uniformLookup = glGetUniformLocation(_programID, uniformName);
+				const char* uniformName_cstr = uniformName.c_str();
+				GLint uniformLookup = glGetUniformLocation(_programID, uniformName_cstr);
 				if (uniformLookup == -1)
 				{
 					AP_ENGINE_CRITICAL("Could not find shader uniform: {}", uniformName);
@@ -224,6 +229,12 @@ namespace Apollo
 				}
 			}
 			return iter->second;
+		}
+
+		void uniform(std::string uniformName, glm::mat4 matrix)
+		{
+			use();
+			glUniformMatrix4fv(uniform(uniformName), 1, GL_FALSE, glm::value_ptr(matrix));
 		}
 	};
 }

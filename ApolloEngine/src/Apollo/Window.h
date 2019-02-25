@@ -4,6 +4,7 @@
 
 #include "Apollo/GL.h"
 #include "Apollo/Apollo.h"
+#include "Apollo/GameSettings.h"
 #include "Apollo/logger/Logger.h"
 
 #define APOLLO_NO_ERROR		0
@@ -18,7 +19,7 @@ namespace Apollo
 	private:
 		GLFWwindow* _window = nullptr;
 
-		const WindowCfg _windowCfg {};
+		WindowCfg _windowCfg {};
 		bool _windowCreated = false;
 	public:
 		Window();
