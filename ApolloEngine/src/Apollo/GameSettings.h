@@ -44,6 +44,7 @@ namespace Apollo
 		{
 			getInstance().gameTime = new ApolloTime();
 		}
+		WindowCfg* windowCfg;
 
 		static GameSettings& getInstance()
 		{
@@ -57,6 +58,5 @@ namespace Apollo
 		}
 
 		ApolloTime* gameTime;
-		WindowCfg* windowCfg;
 	};
 }

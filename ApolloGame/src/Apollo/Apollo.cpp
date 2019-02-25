@@ -6,27 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-struct MovementInput
-{
-	bool upPressed = false;
-	bool downPressed = false;
-	bool leftPressed = false;
-	bool rightPressed = false;
-};
-
-void movePlayer(Apollo::Sprite& sprite, const MovementInput& movementInput)
-{
-	float movementSpeed = 100.0f;
-	float frameMovementSpeed = movementSpeed * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
-	if (movementInput.upPressed)
-		sprite.move(0.0f, frameMovementSpeed);
-	if (movementInput.downPressed)
-		sprite.move(0.0f, -frameMovementSpeed);
-	if (movementInput.leftPressed)
-		sprite.move(frameMovementSpeed, 0.0f);
-	if (movementInput.rightPressed)
-		sprite.move(-frameMovementSpeed, 0.0f);
-}
+#include "Player.h"
 
 int main()
 {
@@ -42,6 +22,7 @@ int main()
 		shader.initFromFile("shader.vert", "shader.frag");
 		Apollo::Sprite sprite;
 		sprite.init(500.0f, 500.0f, 0, false);
+		Apollo::Player player(sprite);
 
 		Apollo::GameSettings::getInstance().setup();
 
@@ -58,15 +39,15 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT);
 
 			shader.use();
-			sprite.draw();
+			player.draw();
 
-			MovementInput movementInput{};
+			Apollo::MovementInput movementInput{};
 			movementInput.upPressed = window.isKeyPressed(GLFW_KEY_W);
 			movementInput.downPressed = window.isKeyPressed(GLFW_KEY_S);
 			movementInput.leftPressed = window.isKeyPressed(GLFW_KEY_D);
 			movementInput.rightPressed = window.isKeyPressed(GLFW_KEY_A);
 
-			movePlayer(sprite, movementInput);
+			player.move(movementInput);
 
 			shader.uniform("transformMatrix", sprite.getTransformMatrix());
 		}
