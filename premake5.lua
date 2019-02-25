@@ -21,6 +21,8 @@ include "premake/glfw"
 include "premake/glew"
 include "premake/imgui"
 
+startproject "ApolloGame"
+
 project "ApolloEngine"
 	location "ApolloEngine"
 	kind "SharedLib"
