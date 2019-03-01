@@ -5,6 +5,8 @@
 #include <Apollo/logger/Logger.h>
 #include <Apollo/render/Shader.h>
 #include <Apollo/render/2d/Sprite.h>
+#include <Apollo/render/2d/DebugRenderer.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -32,6 +34,7 @@ int main()
 		}
 
 		Apollo::World world;
+		Apollo::DebugRenderer debugRenderer;
 
 		Apollo::Shader shader;
 		shader.initFromFile("shader.vert", "shader.frag");
@@ -46,6 +49,8 @@ int main()
 		Apollo::GameSettings::getInstance().windowCfg->scaleFactor = 2.0f;
 		glm::mat4 cam = glm::ortho(0.0f, 1280.0f / Apollo::GameSettings::getInstance().windowCfg->scaleFactor, 0.0f, 720.0f / Apollo::GameSettings::getInstance().windowCfg->scaleFactor);
 		shader.uniform("cameraProjection", cam);
+
+		debugRenderer.init(cam);
 
 		Apollo::Texture::TextureArray blockTextures = getBlockTextures();
 
@@ -70,6 +75,8 @@ int main()
 			worldRenderer.initChunk(Apollo::ChunkPos(x, 0));
 		}
 
+		player.setPos(glm::vec2(100, 200));
+
 		while (!window.shouldClose())
 		{
 			Apollo::GameSettings::getInstance().gameTime->newFrame(glfwGetTime());
@@ -80,7 +87,11 @@ int main()
 
 			shader.use();
 			player.draw(shader);
+			player.debugDraw(debugRenderer);
 			worldRenderer.draw();
+
+
+			debugRenderer.drawAndFlush();
 
 			Apollo::MovementInput movementInput{};
 			movementInput.upPressed = window.isKeyPressed(GLFW_KEY_W);

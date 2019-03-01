@@ -10,7 +10,6 @@ namespace Apollo
 
 		glGenVertexArrays(1, &_vaoID);
 		glBindVertexArray(_vaoID);
-		AP_ENGINE_INFO("Sprite VAO: {}", _vaoID);
 
 		GLuint vbo;
 
@@ -39,6 +38,7 @@ namespace Apollo
 
 	void Sprite::draw()
 	{
+		glDisable(GL_BLEND);
 		glBindVertexArray(_vaoID);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}

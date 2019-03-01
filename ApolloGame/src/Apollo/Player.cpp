@@ -24,9 +24,10 @@ namespace Apollo
 		//BlockPos localBlockPos = 
 	}
 
-	void Player::debugDraw(Shader& shader)
+	void Player::debugDraw(DebugRenderer& debugRenderer)
 	{
-
+		debugRenderer.addSquare(_position.x + 5.0f, _position.y - 5.0f, 22.0f, 20.0f, 0.0f, 0.0f, 0.75f, 0.5f);
+		debugRenderer.addSquare(_position.x + 5.0f, _position.y - 5.0f, 22.0f, 20.0f, 0.0f, 0.0f, 1.0f, 1.0f, true);
 	}
 
 	void Player::move(MovementInput input)

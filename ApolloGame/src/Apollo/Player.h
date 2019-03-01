@@ -5,6 +5,7 @@
 #include <Apollo/GameSettings.h>
 #include <Apollo/render/Shader.h>
 #include <Apollo/render/2d/Sprite.h>
+#include <Apollo/render/2d/DebugRenderer.h>
 
 #include "Apollo/World/World.h"
 
@@ -46,11 +47,14 @@ namespace Apollo
 		~Player();
 
 		void draw(Shader& shader);
-		void debugDraw(Shader& shader);
+		void debugDraw(DebugRenderer& debugRenderer);
 
 		void move(MovementInput input);
 
 		inline PlayerCapabilities& getCapabilities() { return _capabilities; }
 		inline PlayerConfiguration& getConfiguration() { return _playerConfig; }
+
+		inline void setPos(glm::vec2 pos) { _position = pos; }
+		inline glm::vec2 getPos() { return _position; }
 	};
 }
