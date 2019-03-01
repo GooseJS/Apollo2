@@ -1,4 +1,5 @@
 #include "Apollo/render/2d/Sprite.h"
+#include "Apollo/logger/Logger.h"
 
 namespace Apollo
 {
@@ -9,6 +10,7 @@ namespace Apollo
 
 		glGenVertexArrays(1, &_vaoID);
 		glBindVertexArray(_vaoID);
+		AP_ENGINE_INFO("Sprite VAO: {}", _vaoID);
 
 		GLuint vbo;
 

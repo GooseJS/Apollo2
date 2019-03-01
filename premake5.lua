@@ -19,7 +19,7 @@ IncludeDir["stb"] = "lib/stb"
 IncludeDir["imgui"] = "lib/imgui"
 IncludeDir["Box2D"] = "lib/Box2D"
 
-include "lib/Box2D"
+include "premake/Box2D"
 include "premake/glfw"
 include "premake/glew"
 include "premake/imgui"
@@ -117,8 +117,7 @@ project "ApolloGame"
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.spdlog}",
-		"%{IncludeDir.libnoise}",
-		"%{IncludeDir.noiseutils}"
+		"%{prj.name}/src"
 	}
 
 	links

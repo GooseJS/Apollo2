@@ -6,6 +6,8 @@
 #include <Apollo/render/Shader.h>
 #include <Apollo/render/2d/Sprite.h>
 
+#include "Apollo/World/World.h"
+
 namespace Apollo
 {
 	struct MovementInput
@@ -30,16 +32,21 @@ namespace Apollo
 	class Player
 	{
 	private:
+		glm::vec2 worldToBlockPos(glm::vec2 worldPos);
+
+		World _currentWorld;
+
 		glm::vec2 _position = glm::vec2(1.0f);
 		Apollo::Sprite _sprite;
 		
 		PlayerCapabilities _capabilities;
 		PlayerConfiguration _playerConfig;
 	public:
-		Player(Sprite sprite);
+		Player(World world, Sprite sprite);
 		~Player();
 
 		void draw(Shader& shader);
+		void debugDraw(Shader& shader);
 
 		void move(MovementInput input);
 

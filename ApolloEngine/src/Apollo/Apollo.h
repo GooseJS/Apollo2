@@ -11,6 +11,8 @@ namespace Apollo
 		std::string windowTitle = "Apollo Engine";
 
 		bool created = false;
+
+		float scaleFactor = 1.0f;
 	};
 
 	struct OpenGLConfig

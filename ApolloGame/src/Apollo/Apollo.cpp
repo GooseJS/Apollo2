@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <Apollo/Window.h>
 #include <Apollo/GameSettings.h>
 #include <Apollo/logger/Logger.h>
@@ -6,7 +8,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "Apollo/World/World.h"
+#include "Apollo/render/WorldRenderer.h"
+
 #include "Player.h"
+
+Apollo::Texture::TextureArray getBlockTextures()
+{
+	std::vector<std::string> files;
+	files.emplace_back("grass.png");
+	files.emplace_back("dirt.png");
+	return Apollo::Texture::create2DTextureArray(16, 16, files);
+}
 
 int main()
 {
@@ -18,18 +31,44 @@ int main()
 			return -1;
 		}
 
+		Apollo::World world;
+
 		Apollo::Shader shader;
 		shader.initFromFile("shader.vert", "shader.frag");
 		Apollo::Sprite sprite;
-		sprite.init(500.0f, 500.0f, 0, false);
-		Apollo::Player player(sprite);
-		player.getConfiguration().moveSpeed = 100.0f;
-
+		sprite.init(32.0f, 40.0f, 0, false);
+		Apollo::Player player(world, sprite);
+		player.getConfiguration().moveSpeed = 300.0f;
+ 
 		Apollo::GameSettings::getInstance().setup();
 
 		// Camera stuff
-		glm::mat4 cam = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f);
+		Apollo::GameSettings::getInstance().windowCfg->scaleFactor = 2.0f;
+		glm::mat4 cam = glm::ortho(0.0f, 1280.0f / Apollo::GameSettings::getInstance().windowCfg->scaleFactor, 0.0f, 720.0f / Apollo::GameSettings::getInstance().windowCfg->scaleFactor);
 		shader.uniform("cameraProjection", cam);
+
+		Apollo::Texture::TextureArray blockTextures = getBlockTextures();
+
+		Apollo::BlockManager::getInstance().addBlock("air", 0);
+		Apollo::BlockManager::getInstance().addBlock("dirt", blockTextures.getEntry("dirt"));
+		Apollo::BlockManager::getInstance().addBlock("grass", blockTextures.getEntry("grass"));
+
+		world.setBlock(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
+
+		for (int x = 0; x < 100; x++)
+		{
+			for (int y = 0; y < 10; y++)
+			{
+				world.setBlock(Apollo::BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(y == 9 ? 2 : 1));
+			}
+		}
+
+		Apollo::WorldRenderer worldRenderer(world, blockTextures);
+
+		for (int x = 0; x < 100; x += 16)
+		{
+			worldRenderer.initChunk(Apollo::ChunkPos(x, 0));
+		}
 
 		while (!window.shouldClose())
 		{
@@ -41,12 +80,16 @@ int main()
 
 			shader.use();
 			player.draw(shader);
+			worldRenderer.draw();
 
 			Apollo::MovementInput movementInput{};
 			movementInput.upPressed = window.isKeyPressed(GLFW_KEY_W);
 			movementInput.downPressed = window.isKeyPressed(GLFW_KEY_S);
 			movementInput.leftPressed = window.isKeyPressed(GLFW_KEY_D);
 			movementInput.rightPressed = window.isKeyPressed(GLFW_KEY_A);
+
+			if (window.isKeyPressed(GLFW_KEY_Q))
+				window.setShouldClose();
 
 			player.move(movementInput);
 		}

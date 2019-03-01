@@ -2,7 +2,7 @@
 
 namespace Apollo
 {
-	Player::Player(Sprite sprite) : _sprite(sprite)
+	Player::Player(World world, Sprite sprite) : _currentWorld(world), _sprite(sprite)
 	{
 
 	}
@@ -12,10 +12,21 @@ namespace Apollo
 
 	}
 
+	glm::vec2 Player::worldToBlockPos(glm::vec2 worldPos)
+	{
+		return worldPos / 16.f;
+	}
+
 	void Player::draw(Shader& shader)
 	{
 		shader.uniform("transformMatrix", _sprite.getTransformMatrix());
 		_sprite.draw();
+		//BlockPos localBlockPos = 
+	}
+
+	void Player::debugDraw(Shader& shader)
+	{
+
 	}
 
 	void Player::move(MovementInput input)
