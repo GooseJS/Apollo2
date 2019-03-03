@@ -24,15 +24,21 @@ namespace Apollo
 
 	struct PlayerCapabilities
 	{
-		bool canFly = true;
+		bool canFly = false;
 		bool isFlying = false;
+
+		bool isJumping = false;
 	};
 
 	struct PlayerConfiguration
 	{
-		float maxVelocity = 10.f;
+		float maxVelocity = 200.f;
+
 		float gravity = 1.f;
+
 		float moveSpeed = 5.f;
+
+		float jumpPower = 100.f;
 	};
 
 	struct PlayerInternal

@@ -62,22 +62,48 @@ namespace Apollo
 		}
 
 		if (_velocity.x > _playerConfig.maxVelocity) _velocity.x = _playerConfig.maxVelocity;
+		else if (_velocity.x < -_playerConfig.maxVelocity) _velocity.x = -_playerConfig.maxVelocity;
 		if (_velocity.y > _playerConfig.maxVelocity) _velocity.y = _playerConfig.maxVelocity;
+		else if (_velocity.y < -_playerConfig.maxVelocity) _velocity.y = -_playerConfig.maxVelocity; // TODO: Implement canFly
 		_position += (_velocity * glm::vec2(Apollo::GameSettings::getInstance().gameTime->getDeltaTime()));
+
+		_sprite.setPos(_position);
 	}
 
 	void Player::move(MovementInput input)
 	{
 		float frameMovementSpeed = _playerConfig.moveSpeed * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
-		if (input.upPressed)
-			_position += glm::vec2(0.0f, frameMovementSpeed); // TODO: MAKE AN EFFICIENT WAY TO ADD X / Y TO A GLM VEC2 IN ONE LINE
-		if (input.downPressed)
-			_position -= glm::vec2(0.0f, frameMovementSpeed);
+		float frameJumpPower = _playerConfig.jumpPower * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
 		if (input.leftPressed)
 			_position += glm::vec2(frameMovementSpeed, 0.0f);
 		if (input.rightPressed)
 			_position -= glm::vec2(frameMovementSpeed, 0.0f);
 
-		_sprite.setPos(_position);
+		if (_capabilities.isJumping && !input.jumpPressed)
+		{
+			_velocity.y = 0.0f;
+			_capabilities.isJumping = false;
+		}
+
+		if (input.jumpPressed)
+		{
+ 			if (_capabilities.isJumping)
+			{
+				if (_velocity.y < -_playerConfig.jumpPower) // NOTE: If gravity starts winning the fight, we give up jumping
+				{
+					_velocity.y = 0.0f;
+					_capabilities.isJumping = false;
+				}
+				else
+				{
+					_position += glm::vec2(0.0, frameJumpPower);
+				}
+			}
+			else if (_internalData.onGround)
+			{
+				_capabilities.isJumping = true;
+				_position += glm::vec2(0.0, frameJumpPower);
+			}
+		}
 	}
 }

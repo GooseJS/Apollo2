@@ -101,6 +101,7 @@ int main()
 			movementInput.downPressed = window.isKeyPressed(GLFW_KEY_S);
 			movementInput.leftPressed = window.isKeyPressed(GLFW_KEY_D);
 			movementInput.rightPressed = window.isKeyPressed(GLFW_KEY_A);
+			movementInput.jumpPressed = window.isKeyPressed(GLFW_KEY_SPACE);
 
 			if (window.isKeyPressed(GLFW_KEY_Q))
 				window.setShouldClose();
