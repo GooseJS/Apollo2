@@ -8,6 +8,10 @@
 
 #define APOLLO_CHUNK_AREA APOLLO_CHUNK_WIDTH * APOLLO_CHUNK_WIDTH
 
+#ifndef APOLLO_BLOCK_WIDTH
+#define APOLLO_BLOCK_WIDTH 16.0f
+#endif
+
 namespace Apollo
 {
 	struct BlockPos

@@ -40,8 +40,8 @@ int main()
 		shader.initFromFile("shader.vert", "shader.frag");
 		Apollo::Sprite sprite;
 		sprite.init(32.0f, 40.0f, 0, false);
-		Apollo::Player player(world, sprite);
-		player.getConfiguration().moveSpeed = 300.0f;
+		Apollo::Player player(world, Apollo::Rectangle(0.0f, 0.0f, 30.0f, 40.0f));
+		player.getConfiguration().moveSpeed = 100.0f;
  
 		Apollo::GameSettings::getInstance().setup();
 
@@ -57,6 +57,9 @@ int main()
 		Apollo::BlockManager::getInstance().addBlock("air", 0);
 		Apollo::BlockManager::getInstance().addBlock("dirt", blockTextures.getEntry("dirt"));
 		Apollo::BlockManager::getInstance().addBlock("grass", blockTextures.getEntry("grass"));
+
+		Apollo::BlockManager::getInstance().getBlock(1).getData().hasCollision = true;
+		Apollo::BlockManager::getInstance().getBlock(2).getData().hasCollision = true;
 
 		world.setBlock(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
 
@@ -75,7 +78,7 @@ int main()
 			worldRenderer.initChunk(Apollo::ChunkPos(x, 0));
 		}
 
-		player.setPos(glm::vec2(100, 200));
+		player.setPos(glm::vec2(100, 500));
 
 		while (!window.shouldClose())
 		{
@@ -103,6 +106,7 @@ int main()
 				window.setShouldClose();
 
 			player.move(movementInput);
+			player.update();
 		}
 
 		Apollo::GameSettings::getInstance().cleanup();

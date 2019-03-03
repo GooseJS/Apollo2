@@ -34,6 +34,17 @@ namespace Apollo
 			}
 		};
 
+		struct Rectangle
+		{
+			float x = 0;
+			float y = 0;
+			float width = 0;
+			float height = 0;
+
+			Rectangle() {}
+			Rectangle(float _x, float _y, float _width, float _height) : x(_x), y(_y), width(_width), height(_height) {}
+		};
+
 	private:
 		Shader _shader;
 
@@ -61,5 +72,10 @@ namespace Apollo
 		void addSquare(float x, float y, float w, float h, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, bool outlineRender = false);
 
 		void drawAndFlush();
+
+		inline void DebugRenderer::addSquare(Rectangle rect, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, bool outlineRender = false)
+		{
+			addSquare(rect.x, rect.y, rect.width, rect.height, r, g, b, a, outlineRender);
+		}
 	};
 }

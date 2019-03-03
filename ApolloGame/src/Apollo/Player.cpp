@@ -2,9 +2,12 @@
 
 namespace Apollo
 {
-	Player::Player(World world, Sprite sprite) : _currentWorld(world), _sprite(sprite)
+	Player::Player(World& world, Rectangle playerBounds) : _currentWorld(world), _playerBounds(playerBounds)
 	{
-
+		_sprite.init(playerBounds.getWidth(), playerBounds.getHeight(), false);
+		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
+		_internalData.floorCollisionRect.setWidth(20.0f);
+		_internalData.floorCollisionRect.setHeight(4.0f);
 	}
 
 	Player::~Player()
@@ -26,8 +29,41 @@ namespace Apollo
 
 	void Player::debugDraw(DebugRenderer& debugRenderer)
 	{
-		debugRenderer.addSquare(_position.x + 5.0f, _position.y - 5.0f, 22.0f, 20.0f, 0.0f, 0.0f, 0.75f, 0.5f);
-		debugRenderer.addSquare(_position.x + 5.0f, _position.y - 5.0f, 22.0f, 20.0f, 0.0f, 0.0f, 1.0f, 1.0f, true);
+		float r = _internalData.onGround ? 1.0f : 0.0f;
+		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, r, 0.75f, 0.5f);
+		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
+	}
+
+	void Player::update()
+	{
+		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
+		std::vector<BlockPos> floorCollisionBlocks = _internalData.floorCollisionRect.getContainingBlockPos();
+
+		_internalData.onGround = false;
+		for (auto checkingFloorCollisionBlock : floorCollisionBlocks)
+		{
+			Block currentBlock = _currentWorld.getBlock(checkingFloorCollisionBlock);
+			if (currentBlock.getData().hasCollision)
+			{
+				_internalData.onGround = true;
+				break;
+			}
+		}
+
+		if (_internalData.onGround)
+		{
+			// NOTE: On ground!
+			_velocity.y = 0.0f;
+		}
+		else
+		{
+			// NOTE: In air!
+			_velocity.y -= _playerConfig.gravity;
+		}
+
+		if (_velocity.x > _playerConfig.maxVelocity) _velocity.x = _playerConfig.maxVelocity;
+		if (_velocity.y > _playerConfig.maxVelocity) _velocity.y = _playerConfig.maxVelocity;
+		_position += (_velocity * glm::vec2(Apollo::GameSettings::getInstance().gameTime->getDeltaTime()));
 	}
 
 	void Player::move(MovementInput input)

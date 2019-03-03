@@ -7,6 +7,15 @@
 
 namespace Apollo
 {
+	struct BlockData
+	{
+		bool renderWithWorld = false;
+
+		bool hasCollision = false;
+
+		// TODO: Read this in from file!
+	};
+
 	class BlockManager;
 	class Block
 	{
@@ -15,13 +24,17 @@ namespace Apollo
 		int _blockID = -1;
 		int _textureID;
 
+		BlockData _data;
+
 		std::string _blockName;
 	public:
 		Block() {}
 
-		int blockID() const { return _blockID; }
-		int textureID() const { return _textureID; }
-		std::string name() const { return _blockName; }
+		inline int blockID() const { return _blockID; }
+		inline int textureID() const { return _textureID; }
+		inline std::string name() const { return _blockName; }
+
+		inline BlockData& getData() { return _data; }
 	};
 
 	class BlockManager

@@ -2,7 +2,6 @@
 
 namespace Apollo
 {
-
 	void DebugRenderer::init(glm::mat4 cameraMatrix)
 	{
 		_cameraMatrix = cameraMatrix;
@@ -53,14 +52,14 @@ namespace Apollo
 		}
 		else
 		{
-			float lineWidth = 3.f;
+			float lineWidth = 1.f;
 			float transX = x - (lineWidth / 2.f);
 			float transY = y - (lineWidth / 2.f);
-			float transW = w + (lineWidth / 2.f);
-			float transH = h + (lineWidth / 2.f);
+			float transW = w;
+			float transH = h;
 			addSquare(transX, transY, transW, lineWidth, r, g, b, a);
-			addSquare(transX + transW, transY, lineWidth, transH, r, g, b, a);
-			addSquare(transX, transY + transH, transW, lineWidth, r, g, b, a);
+			addSquare(transX + transW, transY, lineWidth, transH + lineWidth, r, g, b, a);
+			addSquare(transX, transY + transH, transW + lineWidth, lineWidth, r, g, b, a);
 			addSquare(transX, transY, lineWidth, transH, r, g, b, a);
 		}
 	}
