@@ -56,6 +56,7 @@ project "ApolloEngine"
 		"GLFW",
 		"GLEW",
 		"Box2D",
+		"ImGui",
 		"opengl32.lib"
 	}
 
@@ -125,6 +126,7 @@ project "ApolloGame"
 		"GLEW",
 		"GLFW",
 		"Box2D",
+		"ImGui",
 		"opengl32.lib",
 		"ApolloEngine"
 	}

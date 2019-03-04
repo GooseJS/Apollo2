@@ -120,7 +120,7 @@ namespace Apollo
 		else if (_velocity.x < -_playerConfig.maxVelocity) _velocity.x = -_playerConfig.maxVelocity;
 		if (_velocity.y > _playerConfig.maxVelocity) _velocity.y = _playerConfig.maxVelocity;
 		else if (_velocity.y < -_playerConfig.maxVelocity) _velocity.y = -_playerConfig.maxVelocity; // TODO: Implement canFly
-		_position += (_velocity * glm::vec2(Apollo::GameSettings::getInstance().gameTime->getDeltaTime()));
+		_position += (_velocity * glm::vec2(Apollo::GameSettings::getInstance().gameTime->getDeltaTime(), Apollo::GameSettings::getInstance().gameTime->getDeltaTime()));
 
 		_sprite.setPos(_position);
 	}

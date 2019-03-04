@@ -42,5 +42,7 @@ namespace Apollo
 
 		inline double getMouseX() { double x = 0, y = 0; glfwGetCursorPos(_window, &x, &y); return x; }
 		inline double getMouseY() { double x = 0, y = 0; glfwGetCursorPos(_window, &x, &y); return y; }
+
+		inline GLFWwindow* getGLFWWindow() { return _window; }
 	};
 }

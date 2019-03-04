@@ -62,6 +62,8 @@ namespace Apollo
 
 		glfwSetKeyCallback(_window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
+			KeyboardKeyEvent globalEvent(key, scancode, mods, action);
+			EventSystem::getInstance().dispatchEvent(globalEvent);
 			switch (action)
 			{
 			case GLFW_PRESS:
@@ -87,20 +89,20 @@ namespace Apollo
 
 		glfwSetMouseButtonCallback(_window, [](GLFWwindow* window, int button, int action, int mods)
 		{
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			MouseButtonEvent globalEvent(button, xpos, ypos, action);
+			EventSystem::getInstance().dispatchEvent(globalEvent);
 			switch (action)
 			{
 			case GLFW_PRESS:
 			{
-				double xpos, ypos;
-				glfwGetCursorPos(window, &xpos, &ypos);
 				EventMouseButtonPressed event(button, xpos, ypos);
 				EventSystem::getInstance().dispatchEvent(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				double xpos, ypos;
-				glfwGetCursorPos(window, &xpos, &ypos);
 				EventMouseButtonPressed event(button, xpos, ypos);
 				EventSystem::getInstance().dispatchEvent(event);
 				break;
@@ -110,12 +112,17 @@ namespace Apollo
 
 		glfwSetCursorPosCallback(_window, [](GLFWwindow* window, double xPos, double yPos)
 		{
-
 			EventMouseMove event((float)xPos, (float)-yPos, (float)xPos - GameSettings::getInstance().internalData->oldMouseX, GameSettings::getInstance().internalData->oldMouseY - (float)yPos);
 			EventSystem::getInstance().dispatchEvent(event);
 
 			GameSettings::getInstance().internalData->oldMouseX = (float)xPos;
 			GameSettings::getInstance().internalData->oldMouseY = (float)yPos;
+		});
+
+		glfwSetScrollCallback(_window, [](GLFWwindow* window, double x, double y)
+		{
+			EventMouseScroll event((float)x, (float)y);
+			EventSystem::getInstance().dispatchEvent(event);
 		});
 
 		EventWindowOpen event;

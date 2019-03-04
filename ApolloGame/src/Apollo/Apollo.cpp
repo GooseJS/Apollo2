@@ -6,7 +6,7 @@
 #include <Apollo/render/Shader.h>
 #include <Apollo/render/2d/Sprite.h>
 #include <Apollo/render/2d/DebugRenderer.h>
-
+#include <Apollo/render/2d/imgui/ApolloImGui.h> 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -75,6 +75,14 @@ int main()
 
 		player.setPos(glm::vec2(100, 500));
 
+		// Setup Platform/Renderer bindings
+		ImGuiContext* imGuiContext = Apollo::ApolloImGui::init(window);
+		ImGui::SetCurrentContext(imGuiContext);
+
+		bool renderTestWindow = true;
+
+		int currentlyPlacingBlock = 0;
+
 		while (!window.shouldClose())
 		{
 			Apollo::GameSettings::getInstance().gameTime->newFrame(glfwGetTime());
@@ -82,6 +90,20 @@ int main()
 			window.swapBuffers();
 			glClearColor(0.3f, 0.9f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			Apollo::ApolloImGui::newFrame();
+
+			if (renderTestWindow)
+				ImGui::ShowDemoWindow(&renderTestWindow);
+
+			{ // Block selection window
+				ImGui::Begin("Place Block"); // Creating a window called "Place Block"
+
+				const char* blockNames[] = { "Dirt", "Grass" };
+				ImGui::Combo("combo", &currentlyPlacingBlock, blockNames, IM_ARRAYSIZE(blockNames));
+
+				ImGui::End();
+			}
 
 			shader.use();
 			player.draw(shader);
@@ -97,11 +119,21 @@ int main()
 			int mouseBlockY = floor(mouseY / 16.0f);
 			debugRenderer.addSquare(mouseBlockX * 16.0f, mouseBlockY  * 16.0f, 16, 16);
 			
-			if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+			if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) && !ImGui::GetIO().WantCaptureMouse)
 			{
 				if (world.chunkExistsAt(Apollo::BlockPos(mouseBlockX, mouseBlockY)))
 					if (world.getBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY)).blockID() != 0)
 						world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(0));
+			}
+			if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && !ImGui::GetIO().WantCaptureMouse)
+			{
+				if (world.chunkExistsAt(Apollo::BlockPos(mouseBlockX, mouseBlockY)))
+				{
+					if (world.getBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY)).blockID() != currentlyPlacingBlock + 1)
+						world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(currentlyPlacingBlock + 1));
+				}
+				else
+					world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(currentlyPlacingBlock + 1));
 			}
 
 			debugRenderer.drawAndFlush();
@@ -118,6 +150,9 @@ int main()
 
 			player.move(movementInput);
 			player.update();
+
+			// ImGui Render
+			Apollo::ApolloImGui::render();
 		}
 
 		Apollo::GameSettings::getInstance().cleanup();
