@@ -25,5 +25,7 @@ namespace Apollo
 		void initChunk(ChunkPos pos);
 
 		void draw();
+
+		void checkForChunkUpdates();
 	};
 }

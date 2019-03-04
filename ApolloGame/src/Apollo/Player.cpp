@@ -42,11 +42,14 @@ namespace Apollo
 		_internalData.onGround = false;
 		for (auto checkingFloorCollisionBlock : floorCollisionBlocks)
 		{
-			Block currentBlock = _currentWorld.getBlock(checkingFloorCollisionBlock);
-			if (currentBlock.getData().hasCollision)
+			if (_currentWorld.chunkExistsAt(checkingFloorCollisionBlock))
 			{
-				_internalData.onGround = true;
-				break;
+				Block currentBlock = _currentWorld.getBlock(checkingFloorCollisionBlock);
+				if (currentBlock.getData().hasCollision)
+				{
+					_internalData.onGround = true;
+					break;
+				}
 			}
 		}
 

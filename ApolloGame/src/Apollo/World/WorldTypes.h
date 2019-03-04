@@ -36,6 +36,8 @@ namespace Apollo
 			y += changeInY;
 			return (*this);
 		}
+		
+		static BlockPos fromScreenCoordinates(float x, float y);
 	};
 
 	struct ChunkPos
@@ -78,7 +80,7 @@ namespace Apollo
 			chunkPos = ChunkPos(blockPos);
 		}
 
-		int index()
+		const int index()
 		{
 			return x | y << 4;
 		}

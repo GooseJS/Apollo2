@@ -20,6 +20,7 @@ namespace Apollo
 	private:
 		ChunkMap _chunks;
 	public:
+		bool chunkExistsAt(ChunkPos pos);
 		ChunkPtr getChunkAt(ChunkPos pos);
 		
 		inline ChunkMap& getRenderChunks() { return _chunks; }
@@ -39,5 +40,7 @@ namespace Apollo
 		{
 			return _chunkProvider.getRenderChunks();
 		}
+
+		inline bool chunkExistsAt(ChunkPos pos) { return _chunkProvider.chunkExistsAt(pos); }
 	};
 }

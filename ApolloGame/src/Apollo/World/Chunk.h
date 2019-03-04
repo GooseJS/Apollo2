@@ -12,7 +12,7 @@ namespace Apollo
 	class Chunk
 	{
 	private:
-		ChunkPos _pos;
+		const ChunkPos _pos;
 		int _blocks[APOLLO_CHUNK_AREA]{};
 		ChunkMesh _mesh{};
 	public:

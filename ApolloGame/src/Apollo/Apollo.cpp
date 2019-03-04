@@ -47,7 +47,7 @@ int main()
 
 		// Camera stuff
 		Apollo::GameSettings::getInstance().windowCfg->scaleFactor = 2.0f;
-		glm::mat4 cam = glm::ortho(0.0f, 1280.0f / Apollo::GameSettings::getInstance().windowCfg->scaleFactor, 0.0f, 720.0f / Apollo::GameSettings::getInstance().windowCfg->scaleFactor);
+		glm::mat4 cam = glm::ortho(0.0f, Apollo::GameSettings::getInstance().windowCfg->windowWidth / Apollo::GameSettings::getInstance().windowCfg->scaleFactor, 0.0f, Apollo::GameSettings::getInstance().windowCfg->windowHeight / Apollo::GameSettings::getInstance().windowCfg->scaleFactor);
 		shader.uniform("cameraProjection", cam);
 
 		debugRenderer.init(cam);
@@ -63,7 +63,7 @@ int main()
 
 		world.setBlock(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
 
-		for (int x = 0; x < 100; x++)
+		for (int x = 0; x < 32; x++)
 		{
 			for (int y = 0; y < 10; y++)
 			{
@@ -71,12 +71,7 @@ int main()
 			}
 		}
 
-		Apollo::WorldRenderer worldRenderer(world, blockTextures);
-
-		for (int x = 0; x < 100; x += 16)
-		{
-			worldRenderer.initChunk(Apollo::ChunkPos(x, 0));
-		}
+		Apollo::WorldRenderer worldRenderer(world, blockTextures);	
 
 		player.setPos(glm::vec2(100, 500));
 
@@ -91,6 +86,9 @@ int main()
 			shader.use();
 			player.draw(shader);
 			player.debugDraw(debugRenderer);
+
+			worldRenderer.checkForChunkUpdates();
+
 			worldRenderer.draw();
 
 
