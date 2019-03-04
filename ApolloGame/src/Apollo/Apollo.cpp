@@ -105,6 +105,8 @@ int main()
 				ImGui::End();
 			}
 
+			Apollo::BlockManager::getInstance().drawBlockDebugData();
+
 			shader.use();
 			player.draw(shader);
 			player.debugDraw(debugRenderer);

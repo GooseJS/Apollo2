@@ -5,6 +5,8 @@
 
 #include <Apollo/render/Texture.h>
 
+#include <Apollo/render/2d/imgui/ApolloImGui.h>
+
 namespace Apollo
 {
 	struct BlockData
@@ -44,6 +46,7 @@ namespace Apollo
 		~BlockManager() = default;
 
 		std::vector<Block> _registeredBlocks;
+		std::vector<std::string> _blockNames;
 
 		int getLastBlockID() { return _registeredBlocks.size(); }
 	public:
@@ -66,6 +69,37 @@ namespace Apollo
 		inline Block& getBlock(int blockID)
 		{
 			return _registeredBlocks.at(blockID);
+		}
+
+		inline void drawBlockDebugData()
+		{
+			ImGui::Begin("Block Data");
+			if (_blockNames.size() != _registeredBlocks.size())
+			{
+				_blockNames.clear();
+				for (int i = 0; i < _registeredBlocks.size(); i++)
+				{
+					_blockNames.push_back(_registeredBlocks.at(i).name());
+				}
+			}
+
+			static int currentlySelectedBlock = 0;
+			if (ImGui::BeginCombo("Blocks", _registeredBlocks[currentlySelectedBlock].name().c_str()))
+			{
+				for (int i = 0; i < _registeredBlocks.size(); i++)
+				{
+					bool isSelected = (currentlySelectedBlock == i);
+					if (ImGui::Selectable(_registeredBlocks[i].name().c_str(), isSelected))
+						currentlySelectedBlock = i;
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::Checkbox("Collision", &_registeredBlocks[currentlySelectedBlock].getData().hasCollision);
+
+			ImGui::End();
 		}
 	};
 }
