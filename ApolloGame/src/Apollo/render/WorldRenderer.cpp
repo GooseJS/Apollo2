@@ -39,9 +39,8 @@ namespace Apollo
 
 			if (!chunk->getMesh().init)
 			{
-				GLuint vbo;
-				glGenBuffers(1, &vbo);
-				glBindBuffer(GL_ARRAY_BUFFER, vbo);
+				glGenBuffers(1, &chunk->getMesh().vboID);
+				glBindBuffer(GL_ARRAY_BUFFER, chunk->getMesh().vboID);
 				glEnableVertexAttribArray(0);
 				glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(ChunkVertex), (GLvoid*)offsetof(ChunkVertex, x));
 				glEnableVertexAttribArray(1);
@@ -49,6 +48,8 @@ namespace Apollo
 
 				chunk->getMesh().init = true;
 			}
+
+			glBindBuffer(GL_ARRAY_BUFFER, chunk->getMesh().vboID);
 
 			std::vector<ChunkVertex> vertices;
 

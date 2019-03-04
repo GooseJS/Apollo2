@@ -43,8 +43,12 @@ namespace Apollo
 
 	struct PlayerInternal
 	{
-		bool onGround;
+		bool onGround = false;
+		bool collidingLeft = false;
+		bool collidingRight = false;
 
+		Rectangle leftCollisionRect;
+		Rectangle rightCollisionRect;
 		Rectangle floorCollisionRect;
 	};
 
@@ -66,6 +70,8 @@ namespace Apollo
 		PlayerConfiguration _playerConfig;
 
 		PlayerInternal _internalData;
+
+		void updateCollisionRects();
 	public:
 		Player(World& world, Rectangle playerBounds);
 		~Player();

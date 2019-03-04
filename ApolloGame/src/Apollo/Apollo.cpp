@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 
-#include <Apollo/Window.h>
+#include <Apollo/window/Window.h>
 #include <Apollo/GameSettings.h>
 #include <Apollo/logger/Logger.h>
 #include <Apollo/render/Shader.h>
@@ -91,6 +91,18 @@ int main()
 
 			worldRenderer.draw();
 
+			float mouseX = window.getMouseX() / Apollo::GameSettings::getInstance().windowCfg->scaleFactor;
+			float mouseY = (Apollo::GameSettings::getInstance().windowCfg->windowHeight - window.getMouseY()) / Apollo::GameSettings::getInstance().windowCfg->scaleFactor;
+			int mouseBlockX = floor(mouseX / 16.0f);
+			int mouseBlockY = floor(mouseY / 16.0f);
+			debugRenderer.addSquare(mouseBlockX * 16.0f, mouseBlockY  * 16.0f, 16, 16);
+			
+			if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT))
+			{
+				if (world.chunkExistsAt(Apollo::BlockPos(mouseBlockX, mouseBlockY)))
+					if (world.getBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY)).blockID() != 0)
+						world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(0));
+			}
 
 			debugRenderer.drawAndFlush();
 

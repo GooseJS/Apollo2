@@ -4,8 +4,11 @@
 
 #include "Apollo/GL.h"
 #include "Apollo/Apollo.h"
+#include "Apollo/InputEvents.h"
 #include "Apollo/GameSettings.h"
 #include "Apollo/logger/Logger.h"
+#include "Apollo/event/EventSystem.h"
+#include "Apollo/window/WindowEvents.h"
 
 #define APOLLO_NO_ERROR		0
 #define APOLLO_GLFW_ERROR	1
@@ -35,5 +38,9 @@ namespace Apollo
 		inline void setShouldClose() { glfwSetWindowShouldClose(_window, true); }
 
 		inline bool isKeyPressed(int keyCode) { return glfwGetKey(_window, keyCode) != GLFW_RELEASE; }
+		inline bool isMouseButtonPressed(int button) { return glfwGetMouseButton(_window, button) != GLFW_RELEASE; }
+
+		inline double getMouseX() { double x = 0, y = 0; glfwGetCursorPos(_window, &x, &y); return x; }
+		inline double getMouseY() { double x = 0, y = 0; glfwGetCursorPos(_window, &x, &y); return y; }
 	};
 }

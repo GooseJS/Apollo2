@@ -5,7 +5,13 @@ namespace Apollo
 	Player::Player(World& world, Rectangle playerBounds) : _currentWorld(world), _playerBounds(playerBounds)
 	{
 		_sprite.init(playerBounds.getWidth(), playerBounds.getHeight(), false);
-		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
+
+		_internalData.leftCollisionRect.setWidth(4.0f);
+		_internalData.leftCollisionRect.setHeight(32.0f);
+
+		_internalData.rightCollisionRect.setWidth(4.0f);
+		_internalData.rightCollisionRect.setHeight(32.0f);
+
 		_internalData.floorCollisionRect.setWidth(20.0f);
 		_internalData.floorCollisionRect.setHeight(4.0f);
 	}
@@ -13,6 +19,14 @@ namespace Apollo
 	Player::~Player()
 	{
 
+	}
+
+	void Player::updateCollisionRects()
+	{
+		// TODO: Abstract these values into some variable
+		_internalData.leftCollisionRect.setPos(_position.x - 0.2f, _position.y + 4.0f);
+		_internalData.rightCollisionRect.setPos(_position.x + 30.0f - 4.0f + 0.2f, _position.y + 4.0f);
+		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
 	}
 
 	glm::vec2 Player::worldToBlockPos(glm::vec2 worldPos)
@@ -29,6 +43,14 @@ namespace Apollo
 
 	void Player::debugDraw(DebugRenderer& debugRenderer)
 	{
+		float collision = _internalData.collidingLeft ? 1.0f : 0.0f;
+		debugRenderer.addSquare(_internalData.leftCollisionRect, 0.0f, collision, 0.75f, 0.5f);
+		debugRenderer.addSquare(_internalData.leftCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
+
+		collision = _internalData.collidingRight ? 1.0f : 0.0f;
+		debugRenderer.addSquare(_internalData.rightCollisionRect, 0.0f, collision, 0.75f, 0.5f);
+		debugRenderer.addSquare(_internalData.rightCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
+
 		float r = _internalData.onGround ? 1.0f : 0.0f;
 		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, r, 0.75f, 0.5f);
 		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
@@ -36,10 +58,10 @@ namespace Apollo
 
 	void Player::update()
 	{
-		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
-		std::vector<BlockPos> floorCollisionBlocks = _internalData.floorCollisionRect.getContainingBlockPos();
+		updateCollisionRects();
 
 		_internalData.onGround = false;
+		std::vector<BlockPos> floorCollisionBlocks = _internalData.floorCollisionRect.getContainingBlockPos();
 		for (auto checkingFloorCollisionBlock : floorCollisionBlocks)
 		{
 			if (_currentWorld.chunkExistsAt(checkingFloorCollisionBlock))
@@ -48,6 +70,36 @@ namespace Apollo
 				if (currentBlock.getData().hasCollision)
 				{
 					_internalData.onGround = true;
+					break;
+				}
+			}
+		}
+		
+		_internalData.collidingLeft = false;
+		std::vector<BlockPos> leftCollisionBlocks = _internalData.leftCollisionRect.getContainingBlockPos();
+		for (auto leftCollisionBlock : leftCollisionBlocks)
+		{
+			if (_currentWorld.chunkExistsAt(leftCollisionBlock))
+			{
+				Block currentBlock = _currentWorld.getBlock(leftCollisionBlock);
+				if (currentBlock.getData().hasCollision)
+				{
+					_internalData.collidingLeft = true;
+					break;
+				}
+			}
+		}
+
+		_internalData.collidingRight = false;
+		std::vector<BlockPos> rightCollisionBlocks = _internalData.rightCollisionRect.getContainingBlockPos();
+		for (auto rightCollisionBlock : rightCollisionBlocks)
+		{
+			if (_currentWorld.chunkExistsAt(rightCollisionBlock))
+			{
+				Block currentBlock = _currentWorld.getBlock(rightCollisionBlock);
+				if (currentBlock.getData().hasCollision)
+				{
+					_internalData.collidingRight = true;
 					break;
 				}
 			}
@@ -77,9 +129,9 @@ namespace Apollo
 	{
 		float frameMovementSpeed = _playerConfig.moveSpeed * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
 		float frameJumpPower = _playerConfig.jumpPower * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
-		if (input.leftPressed)
+		if (input.leftPressed && !_internalData.collidingRight) // I'm so confused????
 			_position += glm::vec2(frameMovementSpeed, 0.0f);
-		if (input.rightPressed)
+		if (input.rightPressed && !_internalData.collidingLeft)
 			_position -= glm::vec2(frameMovementSpeed, 0.0f);
 
 		if (_capabilities.isJumping && !input.jumpPressed)

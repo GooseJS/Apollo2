@@ -4,7 +4,7 @@
 
 #include "Apollo/GL.h"
 #include "Apollo/Core.h"
-#include "Apollo/Window.h"
+#include "Apollo/window/Window.h"
 
 #define APOLLO_GET_CURRENT_TIME_MILLIS std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count()
 #define APOLLO_GET_CURRENT_TIME_SECONDS std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count()
@@ -33,6 +33,13 @@ namespace Apollo
 		}
 	};
 
+	class APOLLO_API InternalData
+	{
+	public:
+		float oldMouseX = 0;
+		float oldMouseY = 0;
+	};
+
 	class APOLLO_API GameSettings
 	{
 	private:
@@ -44,6 +51,7 @@ namespace Apollo
 		static void setup()
 		{
 			getInstance().gameTime = new ApolloTime();
+			getInstance().internalData = new InternalData();
 		}
 
 		static GameSettings& getInstance()
@@ -55,9 +63,11 @@ namespace Apollo
 		static void cleanup()
 		{
 			delete getInstance().gameTime;
+			delete getInstance().internalData;
 		}
 
 		ApolloTime* gameTime;
 		WindowCfg* windowCfg;
+		InternalData* internalData;
 	};
 }

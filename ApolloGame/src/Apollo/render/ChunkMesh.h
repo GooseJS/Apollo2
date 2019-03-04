@@ -10,6 +10,7 @@ namespace Apollo
 
 		int numVertices = 0;
 		GLuint vaoID = 0;
+		GLuint vboID = 0;
 		
 		bool needsUpdate = true;
 	};

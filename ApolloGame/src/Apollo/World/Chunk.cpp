@@ -10,6 +10,7 @@ namespace Apollo
 	void Chunk::setBlock(LocalBlockPos pos, Block block)
 	{
 		_blocks[pos.index()] = block.blockID();
+		_mesh.needsUpdate = true;
 	}
 
 	Block Chunk::getBlock(LocalBlockPos pos)
