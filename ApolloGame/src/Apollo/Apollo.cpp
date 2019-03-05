@@ -76,7 +76,7 @@ int main()
 		player.setPos(glm::vec2(100, 500));
 
 		// Setup Platform/Renderer bindings
-		ImGuiContext* imGuiContext = Apollo::ApolloImGui::init(window);
+		ImGuiContext* imGuiContext = Apollo::ApolloImGui::getInstance().init(window);
 		ImGui::SetCurrentContext(imGuiContext);
 
 		bool renderTestWindow = true;
@@ -91,17 +91,17 @@ int main()
 			glClearColor(0.3f, 0.9f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
-			Apollo::ApolloImGui::newFrame();
-
+			Apollo::ApolloImGui::getInstance().newFrame();
+			
 			if (renderTestWindow)
 				ImGui::ShowDemoWindow(&renderTestWindow);
-
+			
 			{ // Block selection window
 				ImGui::Begin("Place Block"); // Creating a window called "Place Block"
-
+			
 				const char* blockNames[] = { "Dirt", "Grass" };
 				ImGui::Combo("combo", &currentlyPlacingBlock, blockNames, IM_ARRAYSIZE(blockNames));
-
+			
 				ImGui::End();
 			}
 
@@ -155,7 +155,7 @@ int main()
 			player.update();
 
 			// ImGui Render
-			Apollo::ApolloImGui::render();
+			Apollo::ApolloImGui::getInstance().render();
 		}
 
 		Apollo::GameSettings::getInstance().cleanup();

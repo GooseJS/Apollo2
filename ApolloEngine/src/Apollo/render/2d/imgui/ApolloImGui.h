@@ -13,22 +13,61 @@
 
 namespace Apollo
 {
-	namespace ApolloImGui
+	struct ImGuiViewportDataGlfw
 	{
-		APOLLO_API ImGuiContext*	init(Window& window);
-		APOLLO_API void				shutdown();
-		APOLLO_API void				newFrame();
-		APOLLO_API void				render();
+		GLFWwindow* Window;
+		bool        WindowOwned;
 
-		// Called by Init/NewFrame/Shutdown
-		APOLLO_API bool     createFontsTextures();
-		APOLLO_API void     destroyFontsTextures();
-		APOLLO_API bool     createDeviceObjects();
-		APOLLO_API void     destroyDeviceObjects();
+		ImGuiViewportDataGlfw() { Window = NULL; WindowOwned = false; }
+		~ImGuiViewportDataGlfw() { IM_ASSERT(Window == NULL); }
+	};
 
-		APOLLO_API void     mouseButtonEvent(MouseButtonEvent event);
-		APOLLO_API void     scrollEvent(EventMouseScroll event);
-		APOLLO_API void     keyboardEvent(KeyboardKeyEvent event);
-		APOLLO_API void     characterEvent(GLFWwindow* window, unsigned int c);
-	}
+	class APOLLO_API ApolloImGui
+	{
+	public:
+		// OpenGL Data
+		char			_glslVersionString[32] = "#version 330";
+		GLuint			_fontTexture = 0;
+		Shader			_shader{};
+		int				_attribLocationTex = 0, _attribLocationProjMtx = 0;
+		int				_attribLocationPosition = 0, _attribLocationUV = 0, _attribLocationColor = 0;
+		unsigned int	_vboHandle = 0, _elementsHandle = 0;
+
+		// GLFW data
+		Window*			_window;
+		bool			_mouseJustPressed[5] = { false, false, false, false, false };
+		GLFWcursor*		_mouseCursors[ImGuiMouseCursor_COUNT] = { 0 };
+		bool			_wantUpdateMonitors = true;
+
+	private:
+		void setup();
+
+		bool createFontsTextures();
+		void destroyFontsTextures();
+		bool createDeviceObjects();
+		void destroyDeviceObjects();
+		void initPlatformInterface();
+		void shutdownPlatformInterface();
+
+		void updateMonitors();
+		void updateMousePosAndButtons();
+		void updateMouseCursor();
+	public:
+		static ApolloImGui& getInstance()
+		{
+			static ApolloImGui instance;
+			return instance;
+		}
+
+		ImGuiContext* init(Window& window);
+		void newFrame();
+		void shutdown();
+		void renderDrawData(ImDrawData* drawData);
+		void render();
+
+		void mouseButtonEvent(MouseButtonEvent event);
+		void scrollEvent(EventMouseScroll event);
+		void keyboardEvent(KeyboardKeyEvent event);
+		// TODO: Character event
+	};
 }

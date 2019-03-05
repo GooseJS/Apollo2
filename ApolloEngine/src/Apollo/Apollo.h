@@ -2,6 +2,8 @@
 
 #include <string>
 
+struct GLFWwindow;
+
 namespace Apollo
 {
 	struct WindowCfg
@@ -13,6 +15,8 @@ namespace Apollo
 		bool created = false;
 
 		float scaleFactor = 1.0f;
+
+		GLFWwindow* glfwWindow;
 	};
 
 	struct OpenGLConfig
