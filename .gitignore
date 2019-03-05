@@ -3,6 +3,10 @@
 
 imgui.ini
 
+lib\Box2D
+lib\glew
+lib\glfw
+
 build
 
 *.sln
