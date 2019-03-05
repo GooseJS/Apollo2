@@ -27,6 +27,8 @@ namespace Apollo
 		bool canFly = false;
 		bool isFlying = false;
 
+		bool collides = true;
+
 		bool isJumping = false;
 	};
 
@@ -82,6 +84,8 @@ namespace Apollo
 		void update();
 
 		void move(MovementInput input);
+
+		void drawDebugWindow();
 
 		inline PlayerCapabilities& getCapabilities() { return _capabilities; }
 		inline PlayerConfiguration& getConfiguration() { return _playerConfig; }

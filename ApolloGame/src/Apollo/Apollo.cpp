@@ -106,6 +106,7 @@ int main()
 			}
 
 			Apollo::BlockManager::getInstance().drawBlockDebugData();
+			player.drawDebugWindow();
 
 			shader.use();
 			player.draw(shader);

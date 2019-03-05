@@ -105,7 +105,7 @@ namespace Apollo
 			}
 		}
 
-		if (_internalData.onGround)
+		if (_capabilities.collides && _internalData.onGround)
 		{
 			// NOTE: On ground!
 			_velocity.y = 0.0f;
@@ -119,7 +119,8 @@ namespace Apollo
 		if (_velocity.x > _playerConfig.maxVelocity) _velocity.x = _playerConfig.maxVelocity;
 		else if (_velocity.x < -_playerConfig.maxVelocity) _velocity.x = -_playerConfig.maxVelocity;
 		if (_velocity.y > _playerConfig.maxVelocity) _velocity.y = _playerConfig.maxVelocity;
-		else if (_velocity.y < -_playerConfig.maxVelocity) _velocity.y = -_playerConfig.maxVelocity; // TODO: Implement canFly
+		else if (_velocity.y < -_playerConfig.maxVelocity) _velocity.y = -_playerConfig.maxVelocity;
+		if (_capabilities.isFlying) { _velocity.x = 0; _velocity.y = 0; }
 		_position += (_velocity * glm::vec2(Apollo::GameSettings::getInstance().gameTime->getDeltaTime(), Apollo::GameSettings::getInstance().gameTime->getDeltaTime()));
 
 		_sprite.setPos(_position);
@@ -129,36 +130,62 @@ namespace Apollo
 	{
 		float frameMovementSpeed = _playerConfig.moveSpeed * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
 		float frameJumpPower = _playerConfig.jumpPower * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
-		if (input.leftPressed && !_internalData.collidingRight) // I'm so confused????
-			_position += glm::vec2(frameMovementSpeed, 0.0f);
-		if (input.rightPressed && !_internalData.collidingLeft)
-			_position -= glm::vec2(frameMovementSpeed, 0.0f);
 
-		if (_capabilities.isJumping && !input.jumpPressed)
+		if (!_capabilities.isFlying)
 		{
-			_velocity.y = 0.0f;
-			_capabilities.isJumping = false;
-		}
+			if (input.leftPressed && (!_capabilities.collides || !_internalData.collidingRight)) // I'm so confused????
+				_position += glm::vec2(frameMovementSpeed, 0.0f);
+			if (input.rightPressed && (!_capabilities.collides || !_internalData.collidingLeft))
+				_position -= glm::vec2(frameMovementSpeed, 0.0f);
 
-		if (input.jumpPressed)
-		{
- 			if (_capabilities.isJumping)
+			if (_capabilities.isJumping && !input.jumpPressed)
 			{
-				if (_velocity.y < -_playerConfig.jumpPower) // NOTE: If gravity starts winning the fight, we give up jumping
+				_velocity.y = 0.0f;
+				_capabilities.isJumping = false;
+			}
+
+			if (input.jumpPressed)
+			{
+				if (_capabilities.isJumping)
 				{
-					_velocity.y = 0.0f;
-					_capabilities.isJumping = false;
+					if (_velocity.y < -_playerConfig.jumpPower) // NOTE: If gravity starts winning the fight, we give up jumping
+					{
+						_velocity.y = 0.0f;
+						_capabilities.isJumping = false;
+					}
+					else
+					{
+						_position += glm::vec2(0.0, frameJumpPower);
+					}
 				}
-				else
+				else if (_capabilities.collides && _internalData.onGround)
 				{
+					_capabilities.isJumping = true;
 					_position += glm::vec2(0.0, frameJumpPower);
 				}
 			}
-			else if (_internalData.onGround)
-			{
-				_capabilities.isJumping = true;
-				_position += glm::vec2(0.0, frameJumpPower);
-			}
 		}
+		else
+		{
+			if (input.leftPressed && (!_capabilities.collides || !_internalData.collidingRight)) // Once again, still so fucking confused
+				_position += glm::vec2(frameMovementSpeed, 0.0f);
+			if (input.rightPressed && (!_capabilities.collides || !_internalData.collidingLeft))
+				_position -= glm::vec2(frameMovementSpeed, 0.0f);
+			if (input.upPressed)
+				_position += glm::vec2(0.0f, frameMovementSpeed);
+			if (input.downPressed && (!_capabilities.collides || !_internalData.onGround))
+				_position -= glm::vec2(0.0f, frameMovementSpeed);
+		}
+	}
+
+	void Player::drawDebugWindow()
+	{
+		ImGui::Begin("Player");
+
+		ImGui::Checkbox("Collides", &_capabilities.collides);
+		ImGui::Checkbox("Is Flying", &_capabilities.isFlying);
+		ImGui::SliderFloat("Jump Power", &_playerConfig.jumpPower, 0.0f, 500.0f);
+
+		ImGui::End();
 	}
 }
