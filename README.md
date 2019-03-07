@@ -1,6 +1,6 @@
 # ApolloGame
 
-![](https://travis-ci.org/GooseJS/Apollo2.svg?branch=master) 
+![](https://ci.appveyor.com/api/projects/status/ga9wq7e0jdrwwqd3?svg=true) 
 
 ## Features
 
