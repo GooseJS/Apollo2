@@ -28,6 +28,7 @@ namespace Apollo
 		void setBlock(LocalBlockPos pos, Block block, TileEntityPtr tileEntity = nullptr);
 		Block getBlock(LocalBlockPos pos);
 		TileEntityPtr getTileEntity(LocalBlockPos pos);
+		void cleanTileEntity(LocalBlockPos pos);
 
 		void tick();
 

@@ -35,7 +35,7 @@ namespace Apollo
 
 		int _chunkRenderBuffer = 1;
 	public:
-		void setBlock(BlockPos pos, Block block, TileEntityPtr tileEntity = nullptr);
+		Block setBlock(BlockPos pos, Block block, TileEntityPtr tileEntity = nullptr);
 		Block getBlock(BlockPos pos);
 		TileEntityPtr getTileEntity(BlockPos pos);
 

@@ -27,6 +27,13 @@ namespace Apollo
 		return tileEntity;
 	}
 
+	void Chunk::cleanTileEntity(LocalBlockPos pos)
+	{
+		TileEntityPtr tileEntity = _tileEntities.at(pos.index());
+		_tileEntities.erase(pos.index());
+		delete tileEntity;
+	}
+
 	void Chunk::tick()
 	{
 		for (auto iter = _tileEntities.begin(); iter != _tileEntities.end(); iter++)

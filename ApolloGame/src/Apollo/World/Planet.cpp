@@ -15,7 +15,7 @@ namespace Apollo
 	BlockPos Planet::translateToPlanetPos(BlockPos pos)
 	{
 		int x = pos.x;
-		if (pos.x > _planetSize)
+		if (pos.x >= _planetSize)
 			x -= _planetSize;
 		if (pos.x < 0)
 			x += _planetSize;
@@ -83,14 +83,28 @@ namespace Apollo
 
 	void Planet::tick(BlockPos playerPos)
 	{
+		int updateRange = 30;
+		ChunkPos initialLeftBound = ChunkPos(BlockPos(playerPos.x - updateRange, playerPos.y));
+		ChunkPos leftBound = translateChunkToPlanetPos(initialLeftBound);
+		bool outOfRangeLeft;
+
+		ChunkPos initialRightBound = ChunkPos(BlockPos(playerPos.x + updateRange, playerPos.y));
+		ChunkPos rightBound = translateChunkToPlanetPos(initialRightBound);
+		bool outOfRangeRight;
+
 		for (auto iter = _world.getChunks().begin(); iter != _world.getChunks().end(); iter++)
 		{
 			ChunkPtr updateChunk = iter->second;
-			int updateRange = 30;
-			ChunkPos leftBound = translateChunkToPlanetPos(ChunkPos(BlockPos(playerPos.x - updateRange, playerPos.y)));
-			bool outOfRangeLeft = updateChunk->getPos().x < leftBound.x;
-			ChunkPos rightBound = translateChunkToPlanetPos(ChunkPos(BlockPos(playerPos.x + updateRange, playerPos.y)));
-			bool outOfRangeRight = rightBound.x < updateChunk->getPos().x;
+
+			if (initialLeftBound.x != leftBound.x)
+				outOfRangeLeft = (updateChunk->getPos().x + _planetSize / APOLLO_CHUNK_WIDTH) < leftBound.x;
+			else
+				outOfRangeLeft = updateChunk->getPos().x < leftBound.x;
+
+			if (initialRightBound.x != rightBound.x)
+				outOfRangeRight = rightBound.x < (updateChunk->getPos().x - _planetSize / APOLLO_CHUNK_WIDTH);
+			else
+				outOfRangeRight = rightBound.x > updateChunk->getPos().x;
 			// TODO: Vertical checking?
 			if (!outOfRangeLeft || !outOfRangeRight)
 			{

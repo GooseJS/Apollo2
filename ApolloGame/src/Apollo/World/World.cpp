@@ -27,11 +27,16 @@ namespace Apollo
 		return chunk;
 	}
 
-	void World::setBlock(BlockPos pos, Block block, TileEntityPtr tileEntity)
+	Block World::setBlock(BlockPos pos, Block block, TileEntityPtr tileEntity)
 	{
-		_chunkProvider.getChunkAt(pos)->setBlock(pos, block, tileEntity);
+		ChunkPtr currentChunk = _chunkProvider.getChunkAt(pos);
+		Block lastBlock = currentChunk->getBlock(pos);
+		if (lastBlock.getData().isTileEntityBlock)
+			currentChunk->cleanTileEntity(pos);
+		currentChunk->setBlock(pos, block, tileEntity);
 		if (block.getData().isTileEntityBlock && tileEntity == nullptr)
 			AP_CRITICAL("Technically an error. Trying to set a block that should be a tile entity without giving it a tile entity");
+		return lastBlock;
 	}
 	
 	Block World::getBlock(BlockPos pos)

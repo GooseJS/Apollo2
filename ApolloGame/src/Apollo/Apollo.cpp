@@ -71,7 +71,7 @@ int main()
 
 		Apollo::Texture::TextureArray blockTextures = getBlockTextures();
 
-		Apollo::Planet planet(48, cam, blockTextures);
+		Apollo::Planet planet(128, cam, blockTextures);
 
 		Apollo::Player player(planet, Apollo::Rectangle(0.0f, 0.0f, 30.0f, 40.0f), shader);
 
@@ -84,7 +84,7 @@ int main()
 
 		planet.setBlockAt(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
 
-		for (int x = 0; x < 48; x++)
+		for (int x = 0; x < 128; x++)
 		{
 			int y = worldGenerator.getTopBlockHeightAt(x);
 			if (y > 0)
