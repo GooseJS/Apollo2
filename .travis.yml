@@ -4,5 +4,5 @@ language: cpp
 before_script:
 - premake/premake5.exe vs2017
 
-script
+script:
  - msbuild.exe Apollo.sln
