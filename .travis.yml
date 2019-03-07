@@ -2,7 +2,7 @@ os: windows
 language: cpp
 
 before_script:
-- premake\premake5.exe vs2017
+- premake/premake5.exe vs2017
 
 script:
 - devenv -BUILD
