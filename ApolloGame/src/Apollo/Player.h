@@ -8,6 +8,7 @@
 #include <Apollo/render/2d/DebugRenderer.h>
 
 #include "Apollo/World/World.h"
+#include "Apollo/World/Planet.h"
 #include "Apollo/render/Rectangle.h"
 
 namespace Apollo
@@ -60,7 +61,7 @@ namespace Apollo
 	private:
 		glm::vec2 worldToBlockPos(glm::vec2 worldPos);
 
-		World& _currentWorld;
+		Planet& _currentPlanet;
 
 		glm::vec2 _position = glm::vec2(1.0f);
 		glm::vec2 _velocity = glm::vec2(0.0f);
@@ -79,7 +80,7 @@ namespace Apollo
 
 		void checkForCollisons();
 	public:
-		Player(World& world, Rectangle playerBounds, Shader& shader);
+		Player(Planet& planet, Rectangle playerBounds, Shader& shader);
 		~Player();
 
 		void draw();

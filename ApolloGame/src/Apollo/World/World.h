@@ -43,7 +43,7 @@ namespace Apollo
 
 		void tick(BlockPos playerPos);
 
-		inline ChunkMap& getRenderChunks()
+		inline ChunkMap& getChunks()
 		{
 			return _chunkProvider.getChunks();
 		}

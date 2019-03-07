@@ -14,6 +14,7 @@
 #include "Apollo/World/World.h"
 #include "Apollo/World/Chunk.h"
 #include "Apollo/render/WorldRenderer.h"
+#include "Apollo/World/Planet.h"
 
 #include "Apollo/World/tileEntities/TileEntityChest.h"
 
@@ -52,11 +53,10 @@ int main()
 			return -1;
 		}
 
-		Apollo::World world;
+		//Apollo::World world;
 
 		Apollo::Shader shader;
 		shader.initFromFile("shader.vert", "shader.frag");
-		Apollo::Player player(world, Apollo::Rectangle(0.0f, 0.0f, 30.0f, 40.0f), shader);
  
 		Apollo::GameSettings::getInstance().setup();
 
@@ -71,6 +71,10 @@ int main()
 
 		Apollo::Texture::TextureArray blockTextures = getBlockTextures();
 
+		Apollo::Planet planet(48, cam, blockTextures);
+
+		Apollo::Player player(planet, Apollo::Rectangle(0.0f, 0.0f, 30.0f, 40.0f), shader);
+
 		Apollo::BlockManager::getInstance().addBlock("air", 0);
 		Apollo::BlockManager::getInstance().addBlock("dirt", blockTextures.getEntry("dirt"));
 		Apollo::BlockManager::getInstance().addBlock("grass", blockTextures.getEntry("grass"));
@@ -78,22 +82,20 @@ int main()
 
 		Apollo::EarthWorldGenerator worldGenerator(50);
 
-		world.setBlock(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
+		planet.setBlockAt(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
 
-		for (int x = 0; x < 500; x++)
+		for (int x = 0; x < 48; x++)
 		{
 			int y = worldGenerator.getTopBlockHeightAt(x);
 			if (y > 0)
 			{
-				world.setBlock(Apollo::BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(2));
+				planet.setBlockAt(Apollo::BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(2));
 				for (int placingY = y - 1; placingY > 0; placingY--)
 				{
-					world.setBlock(Apollo::BlockPos(x, placingY), Apollo::BlockManager::getInstance().getBlock(1));
+					planet.setBlockAt(Apollo::BlockPos(x, placingY), Apollo::BlockManager::getInstance().getBlock(1));
 				}
 			}
-		}
-
-		Apollo::WorldRenderer worldRenderer(world, blockTextures, cam);	
+		}	
 
 		player.setPos(glm::vec2(100, 500));
 
@@ -137,48 +139,48 @@ int main()
 			player.draw();
 			player.debugDraw(debugRenderer);
 
-			worldRenderer.checkForChunkUpdates();
-
-			worldRenderer.draw();
+			planet.render();
 
 			float mouseX = (window.getMouseX() / Apollo::GameSettings::getInstance().windowCfg->scaleFactor) + cam.xOffset();
 			float mouseY = ((Apollo::GameSettings::getInstance().windowCfg->windowHeight - window.getMouseY()) / Apollo::GameSettings::getInstance().windowCfg->scaleFactor) + cam.yOffset();
 			int mouseBlockX = floor(mouseX / 16.0f);
 			int mouseBlockY = floor(mouseY / 16.0f);
 			debugRenderer.addSquare(mouseBlockX * 16.0f, mouseBlockY  * 16.0f, 16, 16);
+
+			Apollo::BlockPos translatedMousePos = planet.translateToPlanetPos(Apollo::BlockPos(mouseBlockX, mouseBlockY));
 			
 			if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) && !ImGui::GetIO().WantCaptureMouse)
 			{
-				if (mouseBlockX >= 0 && mouseBlockY >= 0)
+				if (translatedMousePos.x >= 0 && translatedMousePos.y >= 0)
 				{
-					if (world.chunkExistsAt(Apollo::BlockPos(mouseBlockX, mouseBlockY)))
+					if (planet.getWorld().chunkExistsAt(translatedMousePos))
 					{
-						Apollo::Block block = world.getBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY));
+						Apollo::Block block = planet.getWorld().getBlock(translatedMousePos);
 						if (block.blockID() == 3)
 						{
-							AP_INFO("{}", static_cast<Apollo::TileEntityChest*>(world.getTileEntity(Apollo::BlockPos(mouseBlockX, mouseBlockY)))->getStoredValue());
+							AP_INFO("{}", static_cast<Apollo::TileEntityChest*>(planet.getWorld().getTileEntity(translatedMousePos))->getStoredValue());
 						}
 						if (block.blockID() != 0)
-							world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(0));
+							planet.getWorld().setBlock(translatedMousePos, Apollo::BlockManager::getInstance().getBlock(0));
 					}
 				}
 			}
 			if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT) && !ImGui::GetIO().WantCaptureMouse)
 			{
-				if (mouseBlockX >= 0 && mouseBlockY >= 0)
+				if (translatedMousePos.x >= 0 && translatedMousePos.y >= 0)
 				{
-					if (world.chunkExistsAt(Apollo::BlockPos(mouseBlockX, mouseBlockY)))
+					if (planet.getWorld().chunkExistsAt(translatedMousePos))
 					{
-						if (world.getBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY)).blockID() != currentlyPlacingBlock + 1)
+						if (planet.getWorld().getBlock(translatedMousePos).blockID() != currentlyPlacingBlock + 1)
 						{
 							Apollo::TileEntityChest* tileEntity = nullptr;
 							if (currentlyPlacingBlock == 2)
 							{
-								tileEntity = new Apollo::TileEntityChest(Apollo::BlockPos(mouseBlockX, mouseBlockY));
+								tileEntity = new Apollo::TileEntityChest(translatedMousePos);
 								tileEntity->setStoredValue(oof);
 								oof++;
 							}
-							world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(currentlyPlacingBlock + 1), tileEntity);
+							planet.getWorld().setBlock(translatedMousePos, Apollo::BlockManager::getInstance().getBlock(currentlyPlacingBlock + 1), tileEntity);
 						}
 					}
 					else
@@ -186,18 +188,18 @@ int main()
 						Apollo::TileEntityChest* tileEntity = nullptr;
 						if (currentlyPlacingBlock == 2)
 						{
-							tileEntity = new Apollo::TileEntityChest(Apollo::BlockPos(mouseBlockX, mouseBlockY));
+							tileEntity = new Apollo::TileEntityChest(translatedMousePos);
 							tileEntity->setStoredValue(oof);
 							oof++;
 						}
-						world.setBlock(Apollo::BlockPos(mouseBlockX, mouseBlockY), Apollo::BlockManager::getInstance().getBlock(currentlyPlacingBlock + 1), tileEntity);
+						planet.getWorld().setBlock(translatedMousePos, Apollo::BlockManager::getInstance().getBlock(currentlyPlacingBlock + 1), tileEntity);
 					}
 				}
 			}
 
 			debugRenderer.drawAndFlush();
 
-			world.tick(player.getBlockPos());
+			planet.tick(player.getBlockPos());
 
 			Apollo::MovementInput movementInput{};
 			movementInput.upPressed = window.isKeyPressed(GLFW_KEY_W);

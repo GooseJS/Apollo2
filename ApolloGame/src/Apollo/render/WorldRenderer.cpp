@@ -83,7 +83,7 @@ namespace Apollo
 
 	void WorldRenderer::checkForChunkUpdates()
 	{
-		ChunkMap& loadedChunks = _world.getRenderChunks();
+		ChunkMap& loadedChunks = _world.getChunks();
 		for (auto chunkIter = loadedChunks.begin(); chunkIter != loadedChunks.end(); chunkIter++)
 		{
 			ChunkPtr chunk = chunkIter->second;
@@ -101,7 +101,7 @@ namespace Apollo
 
 		_camera.uploadMatrix(_worldShader, "orthoProjection");
 
-		for (auto iter = _world.getRenderChunks().begin(); iter != _world.getRenderChunks().end(); iter++)
+		for (auto iter = _world.getChunks().begin(); iter != _world.getChunks().end(); iter++)
 		{
 			ChunkPtr chunk = iter->second;
 			bool outOfBoundsLeft = (_camera.xOffset() / GameSettings::getInstance().windowCfg->scaleFactor > ((chunk->getPos().x + 1)) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);

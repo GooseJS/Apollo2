@@ -2,7 +2,7 @@
 
 namespace Apollo
 {
-	Planet::Planet(OrthographicCamera& cam, Texture::TextureArray blockTextures) : _renderCam(cam), _worldRenderer(_world, blockTextures, cam)
+	Planet::Planet(int planetSize, OrthographicCamera& cam, Texture::TextureArray blockTextures) : _planetSize(planetSize), _renderCam(cam), _worldRenderer(_world, blockTextures, cam)
 	{
 
 	}
@@ -22,6 +22,16 @@ namespace Apollo
 		return BlockPos(x, pos.y);
 	}
 
+	ChunkPos Planet::translateChunkToPlanetPos(ChunkPos pos)
+	{
+		int x = pos.x;
+		if (pos.x < 0)
+			x += _planetSize / APOLLO_CHUNK_WIDTH;
+		if (pos.x > _planetSize / APOLLO_CHUNK_WIDTH)
+			x -= _planetSize / APOLLO_CHUNK_WIDTH;
+		return ChunkPos(x, pos.y);
+	}
+
 	void Planet::render()
 	{
 		_worldRenderer.checkForChunkUpdates();
@@ -29,48 +39,25 @@ namespace Apollo
 		glm::vec3 additionalTranslation(0.0f);
 
 		_worldRenderer.draw();
-		if (_renderCam.xOffset < 0) // TODO: Scaling factor have to be taken into account here?
+		if (_renderCam.xOffset() < 0) // TODO: Scaling factor have to be taken into account here?
 		{
+			// Have to render other side of planet (from 0 -> planetSize)
 			float cachedRenderCamX = _renderCam.xOffset();
 			float cachedRenderCamY = _renderCam.yOffset();
 
-			_renderCam.setPos(_planetSize * 16.0f, _renderCam.yOffset());
+			_renderCam.setPos(_renderCam.xOffset() + (_planetSize * APOLLO_BLOCK_WIDTH), _renderCam.yOffset());
 			_worldRenderer.draw();
+			_renderCam.setPos(cachedRenderCamX, cachedRenderCamY);
 		}
-		else if (_renderCam.xOffset > (_planetSize * APOLLO_BLOCK_WIDTH))
+		else if (_renderCam.xOffset() + _renderCam.width() > (_planetSize * APOLLO_BLOCK_WIDTH))
 		{
 			// Have to render other side of planet (from planetSize -> 0)
-		}
+			float cachedRenderCamX = _renderCam.xOffset();
+			float cachedRenderCamY = _renderCam.yOffset();
 
-		glm::mat4 translation(1.0f);
-
-		glBindTexture(GL_TEXTURE_2D_ARRAY, _blockTextures.textureID);
-		glActiveTexture(GL_TEXTURE0);
-
-		_camera.uploadMatrix(_worldShader, "orthoProjection");
-
-		for (auto iter = _world.getRenderChunks().begin(); iter != _world.getRenderChunks().end(); iter++)
-		{
-			ChunkPtr chunk = iter->second;
-			bool outOfBoundsLeft = (_camera.xOffset() > (chunk->getPos().x - _chunkRenderBuffer) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
-			bool outOfBoundsRight = (_camera.xOffset() + _camera.width() < (chunk->getPos().x + _chunkRenderBuffer) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
-			bool outOfBoundsBottom = false; // TODO (Brendan): Implement if needed?
-			bool outOfBoundsTop = false;
-
-			if (outOfBoundsLeft || outOfBoundsRight || outOfBoundsBottom || outOfBoundsTop)
-			{
-				// TODO (Brendan): Unload / delete chunk and VAO data!
-				continue;
-			}
-
-			glBindVertexArray(chunk->getMesh().vaoID);
-
-			translation = glm::translate(translation, glm::vec3(chunk->getPos().x * APOLLO_BLOCK_WIDTH * APOLLO_CHUNK_WIDTH, chunk->getPos().y * APOLLO_BLOCK_WIDTH * APOLLO_CHUNK_WIDTH, 0.f));
-			_worldShader.use();
-			_worldShader.uniform("translation", translation);
-			translation = glm::mat4(1.0f);
-
-			glDrawArrays(GL_TRIANGLES, 0, chunk->getMesh().numVertices);
+			_renderCam.setPos(_renderCam.xOffset() - (_planetSize * APOLLO_BLOCK_WIDTH), _renderCam.yOffset());
+			_worldRenderer.draw();
+			_renderCam.setPos(cachedRenderCamX, cachedRenderCamY);
 		}
 	}
 
@@ -79,13 +66,36 @@ namespace Apollo
 		return _world.getBlock(translateToPlanetPos(pos));
 	}
 
-	void Planet::setBlockAt(BlockPos pos, int blockID)
+	TileEntityPtr Planet::getTileEntityAt(BlockPos pos)
 	{
-		_world.setBlock(translateToPlanetPos(pos), Apollo::BlockManager::getInstance().getBlock(blockID));
+		return _world.getTileEntity(translateToPlanetPos(pos));
 	}
 
-	void Planet::setBlockAt(BlockPos pos, Block block)
+	void Planet::setBlockAt(BlockPos pos, int blockID, TileEntityPtr tileEntity)
 	{
-		_world.setBlock(translateToPlanetPos(pos), block);
+		setBlockAt(pos, Apollo::BlockManager::getInstance().getBlock(blockID), tileEntity);
+	}
+
+	void Planet::setBlockAt(BlockPos pos, Block block, TileEntityPtr tileEntity)
+	{
+		_world.setBlock(translateToPlanetPos(pos), block, tileEntity);
+	}
+
+	void Planet::tick(BlockPos playerPos)
+	{
+		for (auto iter = _world.getChunks().begin(); iter != _world.getChunks().end(); iter++)
+		{
+			ChunkPtr updateChunk = iter->second;
+			int updateRange = 30;
+			ChunkPos leftBound = translateChunkToPlanetPos(ChunkPos(BlockPos(playerPos.x - updateRange, playerPos.y)));
+			bool outOfRangeLeft = updateChunk->getPos().x < leftBound.x;
+			ChunkPos rightBound = translateChunkToPlanetPos(ChunkPos(BlockPos(playerPos.x + updateRange, playerPos.y)));
+			bool outOfRangeRight = rightBound.x < updateChunk->getPos().x;
+			// TODO: Vertical checking?
+			if (!outOfRangeLeft || !outOfRangeRight)
+			{
+				updateChunk->tick();
+			}
+		}
 	}
 }

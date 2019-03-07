@@ -2,7 +2,7 @@
 
 namespace Apollo
 {
-	Player::Player(World& world, Rectangle playerBounds, Shader& shader) : _currentWorld(world), _playerBounds(playerBounds), _shader(shader)
+	Player::Player(Planet& planet, Rectangle playerBounds, Shader& shader) : _currentPlanet(planet), _playerBounds(playerBounds), _shader(shader)
 	{
 		_sprite.init(playerBounds.getWidth(), playerBounds.getHeight(), false);
 
@@ -12,7 +12,7 @@ namespace Apollo
 		_internalData.rightCollisionRect.setWidth(4.0f);
 		_internalData.rightCollisionRect.setHeight(32.0f);
 
-		_internalData.floorCollisionRect.setWidth(20.0f);
+		_internalData.floorCollisionRect.setWidth(30.0f);
 		_internalData.floorCollisionRect.setHeight(4.0f);
 	}
 
@@ -24,9 +24,9 @@ namespace Apollo
 	void Player::updateCollisionRects()
 	{
 		// TODO: Abstract these values into some variable
-		_internalData.leftCollisionRect.setPos(_position.x - 0.2f, _position.y + 4.0f);
-		_internalData.rightCollisionRect.setPos(_position.x + 30.0f - 4.0f + 0.2f, _position.y + 4.0f);
-		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
+		_internalData.leftCollisionRect.setPos(_position.x - 0.4f, _position.y + 4.0f);
+		_internalData.rightCollisionRect.setPos(_position.x + 30.0f - 4.0f + 0.4f, _position.y + 4.0f);
+		_internalData.floorCollisionRect.setPos(_position.x + 1.0f, _position.y - 0.2f);
 	}
 
 	void Player::checkForCollisons()
@@ -35,9 +35,10 @@ namespace Apollo
 		std::vector<BlockPos> floorCollisionBlocks = _internalData.floorCollisionRect.getContainingBlockPos();
 		for (auto checkingFloorCollisionBlock : floorCollisionBlocks)
 		{
-			if (_currentWorld.chunkExistsAt(checkingFloorCollisionBlock))
+			BlockPos translatedBlock = _currentPlanet.translateToPlanetPos(checkingFloorCollisionBlock);
+			if (_currentPlanet.getWorld().chunkExistsAt(translatedBlock))
 			{
-				Block currentBlock = _currentWorld.getBlock(checkingFloorCollisionBlock);
+				Block currentBlock = _currentPlanet.getBlockAt(translatedBlock);
 				if (currentBlock.getData().hasCollision)
 				{
 					_internalData.onGround = true;
@@ -50,9 +51,10 @@ namespace Apollo
 		std::vector<BlockPos> leftCollisionBlocks = _internalData.leftCollisionRect.getContainingBlockPos();
 		for (auto leftCollisionBlock : leftCollisionBlocks)
 		{
-			if (_currentWorld.chunkExistsAt(leftCollisionBlock))
+			BlockPos translatedBlock = _currentPlanet.translateToPlanetPos(leftCollisionBlock);
+			if (_currentPlanet.getWorld().chunkExistsAt(translatedBlock))
 			{
-				Block currentBlock = _currentWorld.getBlock(leftCollisionBlock);
+				Block currentBlock = _currentPlanet.getBlockAt(translatedBlock);
 				if (currentBlock.getData().hasCollision)
 				{
 					_internalData.collidingLeft = true;
@@ -65,9 +67,10 @@ namespace Apollo
 		std::vector<BlockPos> rightCollisionBlocks = _internalData.rightCollisionRect.getContainingBlockPos();
 		for (auto rightCollisionBlock : rightCollisionBlocks)
 		{
-			if (_currentWorld.chunkExistsAt(rightCollisionBlock))
+			BlockPos translatedBlock = _currentPlanet.translateToPlanetPos(rightCollisionBlock);
+			if (_currentPlanet.getWorld().chunkExistsAt(translatedBlock))
 			{
-				Block currentBlock = _currentWorld.getBlock(rightCollisionBlock);
+				Block currentBlock = _currentPlanet.getBlockAt(translatedBlock);
 				if (currentBlock.getData().hasCollision)
 				{
 					_internalData.collidingRight = true;
@@ -128,6 +131,10 @@ namespace Apollo
 		else if (_velocity.y < -_playerConfig.maxVelocity) _velocity.y = -_playerConfig.maxVelocity;
 		if (_capabilities.isFlying) { _velocity.x = 0; _velocity.y = 0; }
 		_position += (_velocity * glm::vec2(Apollo::GameSettings::getInstance().gameTime->getDeltaTime(), Apollo::GameSettings::getInstance().gameTime->getDeltaTime()));
+
+		// NOTE: Moving within bounds of planet if they move out of
+		if (_position.x < 0) _position.x = _position.x + (_currentPlanet.getSize() * APOLLO_BLOCK_WIDTH);
+		else if (_position.x > _currentPlanet.getSize() * APOLLO_BLOCK_WIDTH) _position.x = _position.x - (_currentPlanet.getSize() * APOLLO_BLOCK_WIDTH);
 
 		_sprite.setPos(_position);
 	}
