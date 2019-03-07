@@ -2,7 +2,4 @@ os: windows
 language: cpp
 
 before_script:
-- premake/premake5.exe vs2017
-
-script:
-- "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvars64.bat" &&devenv.exe -BUILD Apollo.sln
+- premake/premake5.exe gmake2
