@@ -5,4 +5,4 @@ before_script:
 - premake/premake5.exe vs2017
 
 script
- - cd ApolloGame && msbuild.exe ApolloGame.vcxproj
+ - msbuild.exe Apollo.sln
