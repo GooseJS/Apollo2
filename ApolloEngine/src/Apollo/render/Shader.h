@@ -10,6 +10,7 @@
 #include "Apollo/GL.h"
 #include "Apollo/Core.h"
 #include "Apollo/logger/Logger.h"
+#include "Apollo/io/ResourceManager.h"
 
 namespace Apollo
 {
@@ -149,8 +150,8 @@ namespace Apollo
 
 		inline void initFromFile(std::string vertexShaderLoc, std::string fragmentShaderLoc)
 		{
-			std::ifstream vertexFileStream(vertexShaderLoc);
-			std::ifstream fragmentFileStream(fragmentShaderLoc);
+			std::ifstream vertexFileStream(ResourceManager::getInstance().getDataLocation(vertexShaderLoc));
+			std::ifstream fragmentFileStream(ResourceManager::getInstance().getDataLocation(fragmentShaderLoc));
 
 			if (!vertexFileStream.is_open())
 			{

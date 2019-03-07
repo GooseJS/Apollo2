@@ -5,7 +5,7 @@ namespace Apollo
 {
 	WorldRenderer::WorldRenderer(World& world, Texture::TextureArray textureArray, OrthographicCamera& camera) : _world(world), _blockTextures(textureArray), _camera(camera)
 	{
-		_worldShader.initFromFile("GameData/shaders/worldShader.vert", "GameData/shaders/worldShader.frag");
+		_worldShader.initFromFile("shaders/worldShader.vert", "shaders/worldShader.frag");
 		_worldShader.use();
 	}
 

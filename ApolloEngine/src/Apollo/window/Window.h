@@ -4,7 +4,7 @@
 
 #include "Apollo/GL.h"
 #include "Apollo/Apollo.h"
-#include "Apollo/InputEvents.h"
+#include "Apollo/io/InputEvents.h"
 #include "Apollo/GameSettings.h"
 #include "Apollo/logger/Logger.h"
 #include "Apollo/event/EventSystem.h"

@@ -25,7 +25,7 @@ namespace Apollo
 		float getDeltaTime() const { return _deltaTime; }
 		double getCurrentTimeInMS() const { return APOLLO_GET_CURRENT_TIME_MILLIS; }
 
-		inline void newFrame(double glfwTime)
+		inline void newFrame()
 		{
 			_currentFrameTime = glfwGetTime();
 			_deltaTime = _currentFrameTime - _lastFrameTime;

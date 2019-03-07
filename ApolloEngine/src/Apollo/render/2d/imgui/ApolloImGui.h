@@ -5,7 +5,7 @@
 
 #include "Apollo/GL.h"
 #include "Apollo/Core.h"
-#include "Apollo/InputEvents.h"
+#include "Apollo/io/InputEvents.h"
 #include "Apollo/window/Window.h"
 #include "Apollo/render/Shader.h"
 #include "Apollo/event/EventSystem.h"

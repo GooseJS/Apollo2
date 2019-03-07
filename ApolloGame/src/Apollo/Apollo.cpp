@@ -37,15 +37,16 @@ namespace Apollo
 Apollo::Texture::TextureArray getBlockTextures()
 {
 	std::vector<std::string> files;
-	files.emplace_back("GameData/textures/grass.png");
-	files.emplace_back("GameData/textures/dirt.png"); // TODO (Brendan): Global Application ResourceManager class!!!! This is like really high on the list of shit to do
-	files.emplace_back("GameData/textures/chest.png");
+	files.emplace_back("textures/grass.png");
+	files.emplace_back("textures/dirt.png"); // TODO (Brendan): Global Application ResourceManager class!!!! This is like really high on the list of shit to do
+	files.emplace_back("textures/chest.png");
 	return Apollo::Texture::create2DTextureArray(16, 16, files);
 }
 
 int main()
 {
 	{
+		Apollo::ResourceManager::getInstance().setDataDir("GameData/");
 		Apollo::Window window;
 
 		if (window.createWindow() != APOLLO_NO_ERROR)
@@ -56,7 +57,7 @@ int main()
 		//Apollo::World world;
 
 		Apollo::Shader shader;
-		shader.initFromFile("GameData/shaders/shader.vert", "GameData/shaders/shader.frag");
+		shader.initFromFile("shaders/shader.vert", "shaders/shader.frag");
  
 		Apollo::GameSettings::getInstance().setup();
 
@@ -76,9 +77,9 @@ int main()
 		Apollo::Player player(planet, Apollo::Rectangle(0.0f, 0.0f, 30.0f, 40.0f), shader);
 
 		Apollo::BlockManager::getInstance().addBlock("air", 0);
-		Apollo::BlockManager::getInstance().addBlock("dirt", blockTextures.getEntry("dirt"));
-		Apollo::BlockManager::getInstance().addBlock("grass", blockTextures.getEntry("grass"));
-		Apollo::BlockManager::getInstance().addBlock("chest", blockTextures.getEntry("chest"));
+		Apollo::BlockManager::getInstance().addBlock("dirt", blockTextures.getEntry("textures/dirt.png"));
+		Apollo::BlockManager::getInstance().addBlock("grass", blockTextures.getEntry("textures/grass.png"));
+		Apollo::BlockManager::getInstance().addBlock("chest", blockTextures.getEntry("textures/chest.png"));
 
 		Apollo::EarthWorldGenerator worldGenerator(50);
 
@@ -111,12 +112,12 @@ int main()
 
 		while (!window.shouldClose())
 		{
-			Apollo::GameSettings::getInstance().gameTime->newFrame(glfwGetTime());
 			window.updateWindow();
 			window.swapBuffers();
 			glClearColor(0.3f, 0.9f, 0.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			Apollo::GameSettings::getInstance().gameTime->newFrame();
 			Apollo::ApolloImGui::getInstance().newFrame();
 			
 			if (renderTestWindow)
