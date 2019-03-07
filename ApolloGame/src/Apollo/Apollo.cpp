@@ -37,9 +37,9 @@ namespace Apollo
 Apollo::Texture::TextureArray getBlockTextures()
 {
 	std::vector<std::string> files;
-	files.emplace_back("grass.png");
-	files.emplace_back("dirt.png");
-	files.emplace_back("chest.png");
+	files.emplace_back("GameData/textures/grass.png");
+	files.emplace_back("GameData/textures/dirt.png"); // TODO (Brendan): Global Application ResourceManager class!!!! This is like really high on the list of shit to do
+	files.emplace_back("GameData/textures/chest.png");
 	return Apollo::Texture::create2DTextureArray(16, 16, files);
 }
 
@@ -56,7 +56,7 @@ int main()
 		//Apollo::World world;
 
 		Apollo::Shader shader;
-		shader.initFromFile("shader.vert", "shader.frag");
+		shader.initFromFile("GameData/shaders/shader.vert", "GameData/shaders/shader.frag");
  
 		Apollo::GameSettings::getInstance().setup();
 
@@ -123,7 +123,7 @@ int main()
 				ImGui::ShowDemoWindow(&renderTestWindow);
 			
 			{ // Block selection window
-				ImGui::Begin("Place Block"); // Creating a window called "Place Block"
+				ImGui::Begin("Place Block", nullptr, ImGuiWindowFlags_AlwaysAutoResize); // Creating a window called "Place Block"
 			
 				const char* blockNames[] = { "Dirt", "Grass", "Chest" };
 				ImGui::Combo("combo", &currentlyPlacingBlock, blockNames, IM_ARRAYSIZE(blockNames));

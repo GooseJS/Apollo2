@@ -202,6 +202,8 @@ namespace Apollo
 	void ApolloImGui::setup()
 	{
 		ImGuiIO& io = ImGui::GetIO();
+		io.IniFilename = nullptr; // Disable ImGui.ini (Brendan: Maybe add as a setting?)
+
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
 		io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;

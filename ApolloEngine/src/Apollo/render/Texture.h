@@ -74,6 +74,7 @@ namespace Apollo
 				unsigned char* data = stbi_load(textureFile.c_str(), &fileWidth, &fileHeight, &nrChannels, 0);
 				glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, z, texelWidth, texelHeight, 1, GL_RGBA, GL_UNSIGNED_BYTE, data);
 				std::string textureName = textureFile;
+				textureName.replace(textureName.begin(), textureName.begin() + 18, ""); // TODO: I need a better way of doing this. This is retarded.
 				textureName.replace(textureName.end() - 4, textureName.end(), "");
 				retVal.textureEntries.insert(std::pair<std::string, uint8_t>(textureName, z));
 				stbi_image_free(data);

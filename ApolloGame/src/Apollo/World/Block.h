@@ -67,7 +67,7 @@ namespace Apollo
 			
 			using json = nlohmann::json;
 			json blockJSONFile;
-			std::ifstream blockJSONFileStream(std::string("blocks/") + name + std::string(".json"));
+			std::ifstream blockJSONFileStream(std::string("GameData/blocks/") + name + std::string(".json"));
 			blockJSONFileStream >> blockJSONFile;
 
 			AP_TRACE("Loading block data for block {}", name);
@@ -95,7 +95,7 @@ namespace Apollo
 
 		inline void drawBlockDebugData()
 		{
-			ImGui::Begin("Block Data");
+			ImGui::Begin("Block Data", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 			if (_blockNames.size() != _registeredBlocks.size())
 			{
 				_blockNames.clear();

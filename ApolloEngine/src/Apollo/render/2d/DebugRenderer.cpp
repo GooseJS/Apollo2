@@ -4,7 +4,7 @@ namespace Apollo
 {
 	void DebugRenderer::init()
 	{
-		_shader.initFromFile("debugShader.vert", "debugShader.frag"); // TODO: Look into other ways of storing these shaders, dont want the end use to need to have .vert and .frag files
+		_shader.initFromFile("GameData/shaders/debugShader.vert", "GameData/shaders/debugShader.frag"); // TODO: Look into other ways of storing these shaders, dont want the end use to need to have .vert and .frag files
 		glGenVertexArrays(1, &_vaoID);
 		glBindVertexArray(_vaoID);
 
