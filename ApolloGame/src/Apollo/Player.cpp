@@ -205,7 +205,7 @@ namespace Apollo
 		ImGui::InputFloat("Jump Power", &_playerConfig.jumpPower, 5.0f, 10.0f, "%.2f");
 		ImGui::Text(" -- Player Speed -- ");
 		ImGui::Text(" - Move Speed -"); ImGui::SameLine(); ImGui::InputFloat("", &_playerConfig.moveSpeed, 0.5f, 1.0f, "%.1f");
-		ImGui::Text(" - Fly Speed -"); ImGui::SameLine(); ImGui::InputFloat("", &_playerConfig.flySpeed, 0.5f, 1.0f, "%.1f");
+		ImGui::Text(" - Fly Speed -"); ImGui::SameLine(); ImGui::InputFloat("", &_playerConfig.flySpeed, 2.5f, 5.0f, "%.1f");
 
 		ImGui::End();
 	}

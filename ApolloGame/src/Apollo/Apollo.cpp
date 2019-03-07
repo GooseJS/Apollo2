@@ -58,6 +58,7 @@ int main()
 
 		Apollo::Shader shader;
 		shader.initFromFile("shaders/shader.vert", "shaders/shader.frag");
+		int worldLength = 128;
  
 		Apollo::GameSettings::getInstance().setup();
 
@@ -72,7 +73,7 @@ int main()
 
 		Apollo::Texture::TextureArray blockTextures = getBlockTextures();
 
-		Apollo::Planet planet(128, cam, blockTextures);
+		Apollo::Planet planet(worldLength, cam, blockTextures);
 
 		Apollo::Player player(planet, Apollo::Rectangle(0.0f, 0.0f, 30.0f, 40.0f), shader);
 
@@ -83,20 +84,35 @@ int main()
 
 		Apollo::EarthWorldGenerator worldGenerator(50);
 
-		planet.setBlockAt(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
+		//planet.setBlockAt(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
+		//
+		//for (int x = 0; x < worldLength; x++)
+		//{
+		//	int y = worldGenerator.getTopBlockHeightAt(x);
+		//	if (y > 0)
+		//	{
+		//		planet.setBlockAt(Apollo::BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(2));
+		//		for (int placingY = y - 1; placingY > 0; placingY--)
+		//		{
+		//			planet.setBlockAt(Apollo::BlockPos(x, placingY), Apollo::BlockManager::getInstance().getBlock(1));
+		//		}
+		//	}
+		//}	
 
-		for (int x = 0; x < 128; x++)
+		for (int x = 0; x < worldLength / APOLLO_CHUNK_WIDTH; x++)
 		{
 			int y = worldGenerator.getTopBlockHeightAt(x);
 			if (y > 0)
 			{
-				planet.setBlockAt(Apollo::BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(2));
-				for (int placingY = y - 1; placingY > 0; placingY--)
+				Apollo::BlockPos blockPos(x, y);
+				Apollo::ChunkPos pos(blockPos);
+				for (int chunkY = 0; chunkY < pos.y; chunkY++)
 				{
-					planet.setBlockAt(Apollo::BlockPos(x, placingY), Apollo::BlockManager::getInstance().getBlock(1));
+					
+					worldGenerator.generateChunk(planet.getWorld(), Apollo::ChunkPos(pos.x, chunkY)); // This looks retarded, I know
 				}
 			}
-		}	
+		}
 
 		player.setPos(glm::vec2(100, 500));
 

@@ -17,5 +17,7 @@ namespace Apollo
 
 		virtual int getTopBlockHeightAt(int x, int y = 0) override;
 		virtual Block getBlockAt(BlockPos pos, int& y) override;
+
+		virtual void generateChunk(World& world, ChunkPos chunkPos) override;
 	};
 }
