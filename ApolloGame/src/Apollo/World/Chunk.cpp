@@ -7,14 +7,23 @@ namespace Apollo
 
 	}
 
-	void Chunk::setBlock(LocalBlockPos pos, Block block)
+	void Chunk::setBlock(LocalBlockPos pos, Block block, TileEntityPtr tileEntity)
 	{
 		_blocks[pos.index()] = block.blockID();
 		_mesh.needsUpdate = true;
+		if (tileEntity != nullptr)
+			_tileEntities.insert(std::make_pair(pos.index(), std::move(tileEntity)));
 	}
 
 	Block Chunk::getBlock(LocalBlockPos pos)
 	{
-		return BlockManager::getInstance().getBlock(_blocks[pos.index()]);
+		Block block = BlockManager::getInstance().getBlock(_blocks[pos.index()]);
+		return block;
+	}
+
+	TileEntityPtr Chunk::getTileEntity(LocalBlockPos pos)
+	{
+		TileEntityPtr tileEntity = _tileEntities.at(pos.index());
+		return tileEntity;
 	}
 }

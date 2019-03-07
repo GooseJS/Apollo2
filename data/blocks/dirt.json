@@ -1,0 +1,6 @@
+{
+  "blockData": {
+    "hasCollision": true,
+    "renderOnWorldPass":  true
+  }
+}

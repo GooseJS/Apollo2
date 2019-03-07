@@ -9,6 +9,7 @@
 #include "Apollo/World/WorldTypes.h"
 #include "Apollo/World/Block.h"
 #include "Apollo/World/Chunk.h"
+#include "Apollo/World/tileEntities/TileEntity.h"
 
 namespace Apollo
 {
@@ -31,8 +32,9 @@ namespace Apollo
 	private:
 		ChunkProvider _chunkProvider;
 	public:
-		void setBlock(BlockPos pos, Block block);
+		void setBlock(BlockPos pos, Block block, TileEntityPtr tileEntity = nullptr);
 		Block getBlock(BlockPos pos);
+		TileEntityPtr getTileEntity(BlockPos pos);
 
 		ChunkPtr getChunkAt(ChunkPos pos);
 

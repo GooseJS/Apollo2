@@ -1,0 +1,7 @@
+{
+  "blockData": {
+    "hasCollision": true,
+    "renderOnWorldPass": true,
+    "isTileEntityBlock":  true
+  }
+}

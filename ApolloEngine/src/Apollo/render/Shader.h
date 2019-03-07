@@ -231,7 +231,7 @@ namespace Apollo
 			return iter->second;
 		}
 
-		void uniform(std::string uniformName, glm::mat4& matrix)
+		void uniform(const std::string& uniformName, glm::mat4& matrix)
 		{
 			use();
 			glUniformMatrix4fv(uniform(uniformName), 1, GL_FALSE, glm::value_ptr(matrix));

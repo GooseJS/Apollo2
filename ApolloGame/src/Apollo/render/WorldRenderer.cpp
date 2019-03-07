@@ -3,12 +3,10 @@
 
 namespace Apollo
 {
-	WorldRenderer::WorldRenderer(World& world, Texture::TextureArray textureArray) : _world(world), _blockTextures(textureArray)
+	WorldRenderer::WorldRenderer(World& world, Texture::TextureArray textureArray, OrthographicCamera& camera) : _world(world), _blockTextures(textureArray), _camera(camera)
 	{
 		_worldShader.initFromFile("worldShader.vert", "worldShader.frag");
-		glm::mat4 cam = glm::ortho(0.0f, 1280.0f / GameSettings::getInstance().windowCfg->scaleFactor, 0.0f, 720.0f / GameSettings::getInstance().windowCfg->scaleFactor); // TODO: This should be set based on Window dimensions!
 		_worldShader.use();
-		_worldShader.uniform("orthoProjection", cam);
 	}
 
 	void WorldRenderer::initChunk(ChunkPos pos)
@@ -101,9 +99,22 @@ namespace Apollo
 		glBindTexture(GL_TEXTURE_2D_ARRAY, _blockTextures.textureID);
 		glActiveTexture(GL_TEXTURE0);
 
+		_camera.uploadMatrix(_worldShader, "orthoProjection");
+
 		for (auto iter = _world.getRenderChunks().begin(); iter != _world.getRenderChunks().end(); iter++)
 		{
 			ChunkPtr chunk = iter->second;
+			bool outOfBoundsLeft = (_camera.xOffset() > (chunk->getPos().x - _chunkRenderBuffer) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
+			bool outOfBoundsRight = (_camera.xOffset() + _camera.width() < (chunk->getPos().x + _chunkRenderBuffer) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
+			bool outOfBoundsBottom = false; // TODO (Brendan): Implement if needed?
+  			bool outOfBoundsTop = false;
+
+			if (outOfBoundsLeft || outOfBoundsRight || outOfBoundsBottom || outOfBoundsTop)
+			{
+				// TODO (Brendan): Unload / delete chunk and VAO data!
+				continue;
+			}
+
 			glBindVertexArray(chunk->getMesh().vaoID);
 
 			translation = glm::translate(translation, glm::vec3(chunk->getPos().x * APOLLO_BLOCK_WIDTH * APOLLO_CHUNK_WIDTH, chunk->getPos().y * APOLLO_BLOCK_WIDTH * APOLLO_CHUNK_WIDTH, 0.f));

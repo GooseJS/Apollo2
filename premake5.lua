@@ -18,11 +18,14 @@ IncludeDir["glm"] = "lib/glm"
 IncludeDir["stb"] = "lib/stb"
 IncludeDir["imgui"] = "lib/imgui"
 IncludeDir["Box2D"] = "lib/Box2D"
+IncludeDir["FastNoise"] = "lib/FastNoise"
+IncludeDir["json"] = "lib/json/single_include"
 
 include "premake/Box2D"
 include "premake/glfw"
 include "premake/glew"
 include "premake/imgui"
+include "premake/FastNoise"
 
 project "ApolloEngine"
 	location "ApolloEngine"
@@ -118,6 +121,8 @@ project "ApolloGame"
 		"%{IncludeDir.Box2D}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.spdlog}",
+		"%{IncludeDir.FastNoise}",
+		"%{IncludeDir.json}",
 		"%{prj.name}/src"
 	}
 
@@ -127,6 +132,7 @@ project "ApolloGame"
 		"GLFW",
 		"Box2D",
 		"ImGui",
+		"FastNoise",
 		"opengl32.lib",
 		"ApolloEngine"
 	}

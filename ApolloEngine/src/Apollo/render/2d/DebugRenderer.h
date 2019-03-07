@@ -7,6 +7,7 @@
 #include "Apollo/GL.h"
 #include "Apollo/logger/Logger.h"
 #include "Apollo/render/Shader.h"
+#include "Apollo/render/2d/OrthographicCamera.h"
 
 namespace Apollo
 {
@@ -54,14 +55,14 @@ namespace Apollo
 		std::vector<DebugRendererVertex> _outlineVertices;
 		std::vector<DebugRendererVertex> _shapeVertices;
 
-		glm::mat4 _cameraMatrix;
+		OrthographicCamera& _camera;
 
 	public:
-		DebugRenderer() {}
+		DebugRenderer(OrthographicCamera& camera) : _camera(camera) {}
 		~DebugRenderer() {}
 
-		void init(glm::mat4 cameraProjection);
-		inline void updateCameraMatrix(glm::mat4& cameraProjection) { _cameraMatrix = cameraProjection; }
+		void init();
+		inline void changeCamera(OrthographicCamera& camera) { _camera = camera; _camera.uploadMatrix(_shader, "cameraProjection"); }
 
 		void addVertex(float x, float y, float r = 1.0f, float g = 1.0f, float b = 1.0f, float a = 1.0f, bool outlineRender = false);
 

@@ -2,11 +2,9 @@
 
 namespace Apollo
 {
-	void DebugRenderer::init(glm::mat4 cameraMatrix)
+	void DebugRenderer::init()
 	{
-		_cameraMatrix = cameraMatrix;
 		_shader.initFromFile("debugShader.vert", "debugShader.frag"); // TODO: Look into other ways of storing these shaders, dont want the end use to need to have .vert and .frag files
-		_shader.uniform("cameraProjection", _cameraMatrix); // TODO: This needs to be updated!
 		glGenVertexArrays(1, &_vaoID);
 		glBindVertexArray(_vaoID);
 
@@ -70,7 +68,10 @@ namespace Apollo
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glBindVertexArray(_vaoID);
 		glBindBuffer(GL_ARRAY_BUFFER, _vboID);
+
 		_shader.use();
+
+		_camera.uploadMatrix(_shader, "cameraProjection");
 		if (!_outlineVertices.empty())
 		{
 			glBufferData(GL_ARRAY_BUFFER, _shapeVertices.size() * sizeof(DebugRendererVertex), &_outlineVertices[0].xy[0], GL_STATIC_DRAW);

@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 #include <Apollo/render/Texture.h>
 
 #include <Apollo/render/2d/imgui/ApolloImGui.h>
@@ -15,7 +17,7 @@ namespace Apollo
 
 		bool hasCollision = false;
 
-		// TODO: Read this in from file!
+		bool isTileEntityBlock = false;
 	};
 
 	class BlockManager;
@@ -62,7 +64,27 @@ namespace Apollo
 			block._blockID = getLastBlockID();
 			block._textureID = textureID;
 			block._blockName = name;
+			
+			using json = nlohmann::json;
+			json blockJSONFile;
+			std::ifstream blockJSONFileStream(std::string("blocks/") + name + std::string(".json"));
+			blockJSONFileStream >> blockJSONFile;
+
+			AP_TRACE("Loading block data for block {}", name);
+
+			if (!blockJSONFile.empty())
+			{
+				if (blockJSONFile.find("blockData") != blockJSONFile.end())
+				{
+					json blockData = blockJSONFile.at("blockData");
+					if (blockData.find("hasCollision") != blockData.end()) block.getData().hasCollision = blockData.at("hasCollision").get<bool>();
+					if (blockData.find("renderOnWorldPass") != blockData.end()) block.getData().renderWithWorld = blockData.at("renderOnWorldPass").get<bool>();
+					if (blockData.find("isTileEntityBlock") != blockData.end()) block.getData().isTileEntityBlock = blockData.at("isTileEntityBlock").get<bool>();
+				}
+			}
+
 			_registeredBlocks.push_back(block);
+
 			return getLastBlockID() - 1;
 		}
 

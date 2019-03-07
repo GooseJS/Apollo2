@@ -38,7 +38,8 @@ namespace Apollo
 
 		float gravity = 1.f;
 
-		float moveSpeed = 5.f;
+		float moveSpeed = 100.f;
+		float flySpeed = 150.f;
 
 		float jumpPower = 100.f;
 	};
@@ -65,6 +66,7 @@ namespace Apollo
 		glm::vec2 _velocity = glm::vec2(0.0f);
 
 		Sprite _sprite;
+		Shader& _shader;
 
 		Rectangle _playerBounds;
 		
@@ -74,11 +76,13 @@ namespace Apollo
 		PlayerInternal _internalData;
 
 		void updateCollisionRects();
+
+		void checkForCollisons();
 	public:
-		Player(World& world, Rectangle playerBounds);
+		Player(World& world, Rectangle playerBounds, Shader& shader);
 		~Player();
 
-		void draw(Shader& shader);
+		void draw();
 		void debugDraw(DebugRenderer& debugRenderer);
 
 		void update();

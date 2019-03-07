@@ -2,7 +2,7 @@
 
 namespace Apollo
 {
-	Player::Player(World& world, Rectangle playerBounds) : _currentWorld(world), _playerBounds(playerBounds)
+	Player::Player(World& world, Rectangle playerBounds, Shader& shader) : _currentWorld(world), _playerBounds(playerBounds), _shader(shader)
 	{
 		_sprite.init(playerBounds.getWidth(), playerBounds.getHeight(), false);
 
@@ -29,37 +29,8 @@ namespace Apollo
 		_internalData.floorCollisionRect.setPos(_position.x + 5.0f, _position.y - 0.2f);
 	}
 
-	glm::vec2 Player::worldToBlockPos(glm::vec2 worldPos)
+	void Player::checkForCollisons()
 	{
-		return worldPos / 16.f;
-	}
-
-	void Player::draw(Shader& shader)
-	{
-		shader.uniform("transformMatrix", _sprite.getTransformMatrix());
-		_sprite.draw();
-		//BlockPos localBlockPos = 
-	}
-
-	void Player::debugDraw(DebugRenderer& debugRenderer)
-	{
-		float collision = _internalData.collidingLeft ? 1.0f : 0.0f;
-		debugRenderer.addSquare(_internalData.leftCollisionRect, 0.0f, collision, 0.75f, 0.5f);
-		debugRenderer.addSquare(_internalData.leftCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
-
-		collision = _internalData.collidingRight ? 1.0f : 0.0f;
-		debugRenderer.addSquare(_internalData.rightCollisionRect, 0.0f, collision, 0.75f, 0.5f);
-		debugRenderer.addSquare(_internalData.rightCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
-
-		float r = _internalData.onGround ? 1.0f : 0.0f;
-		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, r, 0.75f, 0.5f);
-		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
-	}
-
-	void Player::update()
-	{
-		updateCollisionRects();
-
 		_internalData.onGround = false;
 		std::vector<BlockPos> floorCollisionBlocks = _internalData.floorCollisionRect.getContainingBlockPos();
 		for (auto checkingFloorCollisionBlock : floorCollisionBlocks)
@@ -74,7 +45,7 @@ namespace Apollo
 				}
 			}
 		}
-		
+
 		_internalData.collidingLeft = false;
 		std::vector<BlockPos> leftCollisionBlocks = _internalData.leftCollisionRect.getContainingBlockPos();
 		for (auto leftCollisionBlock : leftCollisionBlocks)
@@ -104,6 +75,41 @@ namespace Apollo
 				}
 			}
 		}
+	}
+
+	glm::vec2 Player::worldToBlockPos(glm::vec2 worldPos)
+	{
+		return worldPos / 16.f;
+	}
+
+	void Player::draw()
+	{
+		_shader.use();
+		_shader.uniform("transformMatrix", _sprite.getTransformMatrix());
+		_sprite.draw();
+		//BlockPos localBlockPos = 
+	}
+
+	void Player::debugDraw(DebugRenderer& debugRenderer)
+	{
+		float collision = _internalData.collidingLeft ? 1.0f : 0.0f;
+		debugRenderer.addSquare(_internalData.leftCollisionRect, 0.0f, collision, 0.75f, 0.5f);
+		debugRenderer.addSquare(_internalData.leftCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
+
+		collision = _internalData.collidingRight ? 1.0f : 0.0f;
+		debugRenderer.addSquare(_internalData.rightCollisionRect, 0.0f, collision, 0.75f, 0.5f);
+		debugRenderer.addSquare(_internalData.rightCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
+
+		float r = _internalData.onGround ? 1.0f : 0.0f;
+		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, r, 0.75f, 0.5f);
+		debugRenderer.addSquare(_internalData.floorCollisionRect, 0.0f, 0.0f, 1.0f, 1.0f, true);
+	}
+
+	void Player::update()
+	{
+		updateCollisionRects();
+
+		checkForCollisons();
 
 		if (_capabilities.collides && _internalData.onGround)
 		{
@@ -128,7 +134,7 @@ namespace Apollo
 
 	void Player::move(MovementInput input)
 	{
-		float frameMovementSpeed = _playerConfig.moveSpeed * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
+		float frameMovementSpeed = (_capabilities.isFlying ? _playerConfig.flySpeed : _playerConfig.moveSpeed) * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
 		float frameJumpPower = _playerConfig.jumpPower * Apollo::GameSettings::getInstance().gameTime->getDeltaTime();
 
 		if (!_capabilities.isFlying)
@@ -180,11 +186,14 @@ namespace Apollo
 
 	void Player::drawDebugWindow()
 	{
-		ImGui::Begin("Player");
+		ImGui::Begin("Player", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
 		ImGui::Checkbox("Collides", &_capabilities.collides);
 		ImGui::Checkbox("Is Flying", &_capabilities.isFlying);
-		ImGui::SliderFloat("Jump Power", &_playerConfig.jumpPower, 0.0f, 500.0f);
+		ImGui::InputFloat("Jump Power", &_playerConfig.jumpPower, 5.0f, 10.0f, "%.2f");
+		ImGui::Text(" -- Player Speed -- ");
+		ImGui::Text(" - Move Speed -"); ImGui::SameLine(); ImGui::InputFloat("", &_playerConfig.moveSpeed, 0.5f, 1.0f, "%.1f");
+		ImGui::Text(" - Fly Speed -"); ImGui::SameLine(); ImGui::InputFloat("", &_playerConfig.flySpeed, 0.5f, 1.0f, "%.1f");
 
 		ImGui::End();
 	}
