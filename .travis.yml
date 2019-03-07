@@ -1,6 +1,8 @@
 os: windows
 language: cpp
 
+before_script:
+- premake/premake5.exe vs2017
+
 script:
-- call premake/premake5.exe gmake2
-- make
+ - msbuild.exe Apollo.sln
