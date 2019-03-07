@@ -29,6 +29,8 @@ namespace Apollo
 		Block getBlock(LocalBlockPos pos);
 		TileEntityPtr getTileEntity(LocalBlockPos pos);
 
+		void tick();
+
 		inline ChunkMesh& getMesh() { return _mesh; }
 		inline ChunkPos getPos() { return _pos; }
 	};

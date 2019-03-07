@@ -5,6 +5,7 @@
 
 #include <Apollo/Apollo.h>
 #include <Apollo/logger/Logger.h>
+#include <Apollo/render/2d/OrthographicCamera.h>
 
 #include "Apollo/World/WorldTypes.h"
 #include "Apollo/World/Block.h"
@@ -24,13 +25,15 @@ namespace Apollo
 		bool chunkExistsAt(ChunkPos pos);
 		ChunkPtr getChunkAt(ChunkPos pos);
 		
-		inline ChunkMap& getRenderChunks() { return _chunks; }
+		inline ChunkMap& getChunks() { return _chunks; }
 	};
 
 	class World
 	{
 	private:
 		ChunkProvider _chunkProvider;
+
+		int _chunkRenderBuffer = 1;
 	public:
 		void setBlock(BlockPos pos, Block block, TileEntityPtr tileEntity = nullptr);
 		Block getBlock(BlockPos pos);
@@ -38,9 +41,11 @@ namespace Apollo
 
 		ChunkPtr getChunkAt(ChunkPos pos);
 
+		void tick(BlockPos playerPos);
+
 		inline ChunkMap& getRenderChunks()
 		{
-			return _chunkProvider.getRenderChunks();
+			return _chunkProvider.getChunks();
 		}
 
 		inline bool chunkExistsAt(ChunkPos pos) { return _chunkProvider.chunkExistsAt(pos); }

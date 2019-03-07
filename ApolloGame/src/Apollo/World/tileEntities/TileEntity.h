@@ -12,5 +12,6 @@ namespace Apollo
 		BlockPos _blockPos;
 	public:
 		TileEntity(Block& parentBlock, BlockPos blockPos);
+		virtual void tick() = 0;
 	};
 }

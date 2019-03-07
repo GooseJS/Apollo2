@@ -96,5 +96,7 @@ namespace Apollo
 
 		inline void setPos(glm::vec2 pos) { _position = pos; }
 		inline glm::vec2 getPos() { return _position; }
+
+		inline BlockPos getBlockPos() { return BlockPos(_position.x / APOLLO_BLOCK_WIDTH, _position.y / APOLLO_BLOCK_WIDTH); }
 	};
 }

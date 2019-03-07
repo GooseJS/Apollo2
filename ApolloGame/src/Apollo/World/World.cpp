@@ -50,4 +50,22 @@ namespace Apollo
 	{
 		return _chunkProvider.getChunkAt(pos);
 	}
+
+	void World::tick(BlockPos playerPos)
+	{
+		for (auto iter = _chunkProvider.getChunks().begin(); iter != _chunkProvider.getChunks().end(); iter++)
+		{
+			ChunkPtr updateChunk = iter->second;
+			int updateRange = 30;
+			ChunkPos leftBound = ChunkPos(BlockPos(playerPos.x - updateRange, playerPos.y));
+			bool outOfRangeLeft = updateChunk->getPos().x < leftBound.x;
+			ChunkPos rightBound = ChunkPos(BlockPos(playerPos.x + updateRange, playerPos.y));
+			bool outOfRangeRight = rightBound.x < updateChunk->getPos().x;
+			// TODO: Vertical checking?
+			if (!outOfRangeLeft && !outOfRangeRight)
+			{
+				updateChunk->tick();
+			}
+		}
+	}
 }

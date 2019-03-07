@@ -104,8 +104,8 @@ namespace Apollo
 		for (auto iter = _world.getRenderChunks().begin(); iter != _world.getRenderChunks().end(); iter++)
 		{
 			ChunkPtr chunk = iter->second;
-			bool outOfBoundsLeft = (_camera.xOffset() > (chunk->getPos().x - _chunkRenderBuffer) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
-			bool outOfBoundsRight = (_camera.xOffset() + _camera.width() < (chunk->getPos().x + _chunkRenderBuffer) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
+			bool outOfBoundsLeft = (_camera.xOffset() / GameSettings::getInstance().windowCfg->scaleFactor > ((chunk->getPos().x + 1)) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
+			bool outOfBoundsRight = ((_camera.xOffset() + _camera.width()) < (chunk->getPos().x) * APOLLO_CHUNK_WIDTH * APOLLO_BLOCK_WIDTH);
 			bool outOfBoundsBottom = false; // TODO (Brendan): Implement if needed?
   			bool outOfBoundsTop = false;
 

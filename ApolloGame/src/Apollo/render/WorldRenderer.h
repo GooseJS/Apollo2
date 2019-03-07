@@ -20,7 +20,6 @@ namespace Apollo
 		Texture::TextureArray _blockTextures;
 
 		float _blockSize = 16.0f;
-		int _chunkRenderBuffer = 1;
 
 		OrthographicCamera& _camera;
 	public:
@@ -31,8 +30,5 @@ namespace Apollo
 		void draw();
 
 		void checkForChunkUpdates();
-
-		inline int getChunkRenderBuffer() const { return _chunkRenderBuffer; }
-		inline void setChunkRenderBuffer(int bufferInChunks) { _chunkRenderBuffer = bufferInChunks; }
 	};
 }

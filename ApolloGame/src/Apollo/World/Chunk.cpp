@@ -26,4 +26,12 @@ namespace Apollo
 		TileEntityPtr tileEntity = _tileEntities.at(pos.index());
 		return tileEntity;
 	}
+
+	void Chunk::tick()
+	{
+		for (auto iter = _tileEntities.begin(); iter != _tileEntities.end(); iter++)
+		{
+			iter->second->tick();
+		}
+	}
 }

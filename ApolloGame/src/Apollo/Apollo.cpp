@@ -197,6 +197,8 @@ int main()
 
 			debugRenderer.drawAndFlush();
 
+			world.tick(player.getBlockPos());
+
 			Apollo::MovementInput movementInput{};
 			movementInput.upPressed = window.isKeyPressed(GLFW_KEY_W);
 			movementInput.downPressed = window.isKeyPressed(GLFW_KEY_S);

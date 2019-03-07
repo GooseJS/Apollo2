@@ -188,6 +188,11 @@ namespace Apollo
 	{
 		ImGui::Begin("Player", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
+		BlockPos blockPos = getBlockPos();
+		ChunkPos chunkPos(blockPos);
+		ImGui::Text("Current Position: %i, %i", blockPos.x, blockPos.y);
+		ImGui::Text("Chunk Postion: %i, %i", chunkPos.x, chunkPos.y);
+
 		ImGui::Checkbox("Collides", &_capabilities.collides);
 		ImGui::Checkbox("Is Flying", &_capabilities.isFlying);
 		ImGui::InputFloat("Jump Power", &_playerConfig.jumpPower, 5.0f, 10.0f, "%.2f");

@@ -9,6 +9,8 @@ namespace Apollo
 	public:
 		TileEntityChest(BlockPos pos);
 
+		virtual void tick() override { AP_INFO("Ticking chest!"); }
+
 		inline void setStoredValue(int value) { storedValue = value; }
 		inline int getStoredValue() const { return storedValue; }
 	};
