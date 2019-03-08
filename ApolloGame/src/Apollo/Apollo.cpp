@@ -82,7 +82,7 @@ int main()
 		Apollo::BlockManager::getInstance().addBlock("grass", blockTextures.getEntry("textures/grass.png"));
 		Apollo::BlockManager::getInstance().addBlock("chest", blockTextures.getEntry("textures/chest.png"));
 
-		Apollo::EarthWorldGenerator worldGenerator(50);
+		Apollo::EarthWorldGenerator worldGenerator(200);
 
 		//planet.setBlockAt(Apollo::BlockPos(15, 15), Apollo::BlockManager::getInstance().getBlock(2));
 		//
@@ -101,17 +101,7 @@ int main()
 
 		for (int x = 0; x < worldLength / APOLLO_CHUNK_WIDTH; x++)
 		{
-			int y = worldGenerator.getTopBlockHeightAt(x);
-			if (y > 0)
-			{
-				Apollo::BlockPos blockPos(x, y);
-				Apollo::ChunkPos pos(blockPos);
-				for (int chunkY = 0; chunkY < pos.y; chunkY++)
-				{
-					
-					worldGenerator.generateChunk(planet.getWorld(), Apollo::ChunkPos(pos.x, chunkY)); // This looks retarded, I know
-				}
-			}
+			worldGenerator.generateChunk(planet.getWorld(), x);
 		}
 
 		player.setPos(glm::vec2(100, 500));

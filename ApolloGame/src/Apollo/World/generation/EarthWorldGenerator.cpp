@@ -24,31 +24,29 @@ namespace Apollo
 		return BlockManager::getInstance().getBlock(0);
 	}
 
-	void EarthWorldGenerator::generateChunk(World& world, ChunkPos chunkPos)
+	void EarthWorldGenerator::generateChunk(World& world, int chunkX)
 	{
-		ChunkPtr chunk = world.getChunkAt(chunkPos);
-		int blockX = chunkPos.x * APOLLO_CHUNK_WIDTH;
-		int blockY = chunkPos.y * APOLLO_CHUNK_WIDTH; // TODO: Fucking allow more conversations between ChunkPos -> BlockPos, etc
-		for (int x = 0; x < APOLLO_CHUNK_WIDTH; x++)
+		int firstChunkX = chunkX * APOLLO_CHUNK_WIDTH;
+		for (int x = firstChunkX; x < firstChunkX + APOLLO_CHUNK_WIDTH; x++) // World gen pass
 		{
-			int topBlockHeight = getTopBlockHeightAt(blockX, blockY);
-			if (topBlockHeight > blockY)
-				continue;
-			if (topBlockHeight <= blockY + APOLLO_CHUNK_WIDTH)
+			int topBlockHeight = getTopBlockHeightAt(x);
+			world.setBlock(BlockPos(x, topBlockHeight), Apollo::BlockManager::getInstance().getBlock(2));	// Note: Setting top height block to grass
+			for (int y = 0; y < topBlockHeight; y++)
 			{
-				chunk->setBlock(LocalBlockPos(x, topBlockHeight), Apollo::BlockManager::getInstance().getBlock(2)); // Note: Setting top height block to grass
-				for (int y = topBlockHeight; y >= blockY; y--)
-				{
-					chunk->setBlock(LocalBlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(1)); // Note: Setting all blocks below top Y to dirt
-				}
+				world.setBlock(BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(1));			// Note: Setting all blocks below top Y to dirt
 			}
-			else
+		}
+		// Yes, I know these can be done in the same for loop. This is temporary code and it'll be convient to already have these seperated into seperate passes
+		for (int x = firstChunkX; x < firstChunkX + APOLLO_CHUNK_WIDTH; x++) // Cave pass
+		{
+			int topBlockHeight = getTopBlockHeightAt(x) - 20; // Note: buffer between ground level and first possibilty of cave
+
+			for (int y = 10; y < topBlockHeight; y++)
 			{
-				for (int y = 0; y < APOLLO_CHUNK_WIDTH; y++)
-				{
-					chunk->setBlock(LocalBlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(1)); // Note: Setting everything to dirt because the top Y is larger than our top Y
-				}
+				if (getTopBlockHeightAt(x, y) > 110)
+					world.setBlock(BlockPos(x, y), Apollo::BlockManager::getInstance().getBlock(0));
 			}
+			
 		}
 	}
 }

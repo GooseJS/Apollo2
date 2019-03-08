@@ -75,7 +75,8 @@ namespace Apollo
 
 			chunk->getMesh().numVertices = vertices.size();
 
-			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(ChunkVertex), &vertices[0].x, GL_STATIC_DRAW);
+			if (chunk->getMesh().numVertices > 0)
+				glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(ChunkVertex), &vertices[0].x, GL_STATIC_DRAW);
 
 			chunk->getMesh().needsUpdate = false;
 		}

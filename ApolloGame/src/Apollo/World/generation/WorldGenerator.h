@@ -20,6 +20,6 @@ namespace Apollo
 		virtual int getTopBlockHeightAt(int x, int y) = 0;
 		virtual Block getBlockAt(BlockPos pos, int& y) = 0; // TODO: This should be turned into more of a "hey this is what the top soil block is, this is what the deep dirt is, this is what stone is, etc."
 
-		virtual void generateChunk(World& world, ChunkPos chunkPos) = 0;
+		virtual void generateChunk(World& world, int chunkX) = 0;
 	};
 }
